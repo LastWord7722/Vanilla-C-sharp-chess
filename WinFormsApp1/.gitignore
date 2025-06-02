@@ -1,0 +1,27 @@
+# Build folders
+bin/
+obj/
+
+# Rider project files
+*.iml
+.idea/
+riderModule.iml
+*.DotSettings
+*.DotSettings.user
+
+# ReSharper cache
+_ReSharper.Caches/
+
+# User-specific files
+*.user
+*.suo
+*.userprefs
+
+# NuGet packages (если используешь пакет-менеджер, обычно игнорируется)
+packages/
+
+# Visual Studio workspace files
+.vs/
+
+# NCrunch testing tool files
+*.ncrunch*
