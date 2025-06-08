@@ -6,30 +6,39 @@ public class Chessboard
 {
     private static readonly byte Size = 8;
 
-    private static readonly List<char> Rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    private static readonly List<char> Columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
     //char is [A-H],
-    private Dictionary<char, List<Cell>> _cells;
+    private Dictionary<Position, Cell> _cells;
 
-    private Chessboard(Dictionary<char, List<Cell>> cells)
+    private Chessboard(Dictionary<Position, Cell> cells)
     {
         _cells = cells;
     }
 
     public static Chessboard Make()
     {
-        var cells = new Dictionary<char, List<Cell>>();
-        foreach (char row in Rows)
+        var cells = new Dictionary<Position, Cell>();
+        
+        for (int i = 0; i < Size; i++)
         {
-            var cellInRow = new List<Cell>();
-            for (int i = 0; i < Size; i++)
+            foreach (char column in Columns)
             {
-                cellInRow.Add(new Cell(new Position(row,i +1)));
+                Position currentPosition = new Position(column, i+1);
+                cells[currentPosition] = new Cell(currentPosition);
             }
-
-            cells[row] = cellInRow;
         }
-
+        
         return new Chessboard(cells);
+    }
+
+    public Dictionary<Position, Cell> GetCells()
+    {
+        return _cells;
+    }
+
+    public Cell GetCellByPosition(Position position)
+    {
+        return _cells[position];
     }
 }

@@ -3,33 +3,34 @@ using System.Text.RegularExpressions;
 namespace WinFormsApp1.ValueObjects;
 
 // юзаем структуру по причине того что позиции имутабельная и простая 
-public readonly struct Position
+public readonly record struct Position
 {
-    private readonly char _file; // A–H
-    private readonly int _rank;  // 1–8
+    private readonly char _column; // A–H
+    private readonly  int _row;  // 1–8
 
-    public Position(char file, int rank)
+    public Position(char column, int row)
     {
-        const string patternFile = @"^[A-H]$"; // Столбец
-        const string patternRank = @"^[1-8]$"; // Ряд
+        _column = char.ToUpper(column);
+        if (column < 'A' || column > 'H')
+            throw new Exception("not valid position column");
+        if (row < 1 || row > 8)
+            throw new Exception("not valid position row");
 
-        if (!Regex.Match(file.ToString(), patternFile).Success || !Regex.Match(rank.ToString(), patternRank).Success)
-            throw new Exception("not valid position");
-        _file = file;
-        _rank = rank;
+        _column = column;
+        _row = row;
     }
 
     public string GetPositionCode()
     {
-        return _file.ToString() + _rank.ToString();
+        return _column.ToString() + _row.ToString();
     }
-    public char GetFile()
+    public char GetColumn()
     {
-        return _file;
+        return _column;
     }  
-    public int GetRank()
+    public int GetRow()
     {
-        return _rank;
+        return _row;
     }
     
 }

@@ -6,7 +6,7 @@ namespace WinFormsApp1.Entities.Chessboard;
 public class Cell
 {
     private Position _position;
-    private BaseFigure? figure;
+    private BaseFigure? _figure;
     
     public Cell(Position position)
     {
@@ -15,6 +15,16 @@ public class Cell
 
     public bool HasFigure()
     {
-        return figure != null;
+        return _figure != null;
+    }
+
+    public void SetFigure(BaseFigure figure)
+    {
+        _figure = figure;
+    }
+
+    public Position GetPosition()
+    {
+        return _position;
     }
 }
