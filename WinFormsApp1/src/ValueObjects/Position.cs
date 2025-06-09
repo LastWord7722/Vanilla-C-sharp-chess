@@ -10,7 +10,7 @@ public readonly record struct Position
 
     public Position(char column, int row)
     {
-        _column = char.ToUpper(column);
+        column = char.ToUpper(column);
         if (column < 'A' || column > 'H')
             throw new Exception("not valid position column");
         if (row < 1 || row > 8)
@@ -31,6 +31,11 @@ public readonly record struct Position
     public int GetRow()
     {
         return _row;
+    }
+    
+    public bool IsColumn(char column)
+    {
+        return char.ToLower(_column) == char.ToLower(column);
     }
     
 }
