@@ -9,9 +9,9 @@ public class King : BaseFigure
     {
     }
 
-    public override List<Position> GetAvailableMoves()
+
+    public override List<Position> GetAvailableMoves(Chessboard.Chessboard chessboard)
     {
-        // 
         throw new NotImplementedException();
     }
 }

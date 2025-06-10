@@ -41,4 +41,9 @@ public class Chessboard
     {
         return _cells[position];
     }
+
+    public List<char> GetListColumns()
+    {
+        return Columns;
+    }
 }

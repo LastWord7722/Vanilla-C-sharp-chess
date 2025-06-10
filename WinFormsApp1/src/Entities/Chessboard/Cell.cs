@@ -13,6 +13,10 @@ public class Cell
         _position = position;
     }
 
+    public BaseFigure? GetFigure()
+    {
+        return _figure;
+    }
     public bool HasFigure()
     {
         return _figure != null;

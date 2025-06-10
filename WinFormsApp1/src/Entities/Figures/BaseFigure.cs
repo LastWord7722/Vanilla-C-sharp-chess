@@ -1,30 +1,52 @@
 using WinFormsApp1.Enums;
+using WinFormsApp1.Interfaces;
 using WinFormsApp1.ValueObjects;
 
 namespace WinFormsApp1.Entities.Figures;
 
 public abstract class BaseFigure
 {
-    private Position _position;
-    private FigureColor _color;
+    protected Position Position;
+    protected FigureColor Color;
     private bool _alive = true;
 
     protected BaseFigure(FigureColor color, Position position)
     {
-        _position = position;
-        _color = color;
+        Position = position;
+        Color = color;
     }
 
-    public abstract List<Position> GetAvailableMoves();
+    protected int GetNextRow(int currentRow)
+    {
+        int nextRow = Color == FigureColor.White ? currentRow + 1 : currentRow -1 ;
+        return nextRow < 1 || nextRow > 8 ? -1 : nextRow;
+    }
+    protected char GetLeftColumn(char currentColumn)
+    {
+        // need add 
+        throw new NotImplementedException();
+    }
+    protected char GetRightColumn(char currentColumn)
+    {
+        // need add 
+        throw new NotImplementedException();
+    }
+    public abstract List<Position> GetAvailableMoves(Chessboard.Chessboard chessboard);
 
     public Position GetPosition()
     {
-        return _position;
+        return Position;
+    }
+
+    public BaseFigure SetPosition(Position position)
+    {
+        Position = position;
+        return this;
     }
 
     public FigureColor GetColor()
     {
-        return _color;
+        return Color;
     }
 
     public void ToNotAlive()

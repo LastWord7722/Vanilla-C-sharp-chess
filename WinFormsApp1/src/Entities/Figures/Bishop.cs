@@ -8,10 +8,8 @@ public class Bishop : BaseFigure
     public Bishop(FigureColor color, Position position) : base(color, position)
     {
     }
-
-    public override List<Position> GetAvailableMoves()
+    public override List<Position> GetAvailableMoves(Chessboard.Chessboard chessboard)
     {
-        // 
         throw new NotImplementedException();
     }
 }

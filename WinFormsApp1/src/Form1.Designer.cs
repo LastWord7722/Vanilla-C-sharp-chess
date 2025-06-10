@@ -1,4 +1,5 @@
 ﻿using WinFormsApp1.Entities.Chessboard;
+using WinFormsApp1.Factories;
 using WinFormsApp1.FormLayout;
 using WinFormsApp1.ValueObjects;
 
@@ -6,6 +7,8 @@ namespace WinFormsApp1;
 
 partial class Form1
 {
+    private Chessboard _chessboard;
+    private ButtonCell? _selectedBtnCell;
     /// <summary>
     ///  Required designer variable.
     /// </summary>
@@ -34,6 +37,7 @@ partial class Form1
     private void InitializeComponent()
     {
         this.components = new System.ComponentModel.Container();
+        initChessboard();
         rendreChessboard();
 
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -42,26 +46,31 @@ partial class Form1
 
     }
 
+    private void initChessboard()
+    {
+        _chessboard = new ArrangerFigure(Chessboard.Make()).ClassicArrangement();
+    }
     private void rendreChessboard()
     {
         int heightWidth = 50;
         int x = 0;
         int y = 0;
         bool isBlack = false;
-        var sortedCells = Chessboard.Make()
-            .GetCells()
-            .OrderByDescending(kvp => kvp.Key.GetRow());
+        var sortedCells = _chessboard.GetCells().OrderByDescending(kvp => kvp.Key.GetRow());
         
         foreach (var (_, cell) in sortedCells)
         {
-            ButtonCell currentCell = ButtonCell.Make(cell, isBlack, x,y);
+            ButtonCell currentCell = ButtonCell.Make(cell, isBlack, x,y).SetClickEvent(BtnCell_Click);
             Position position = cell.GetPosition(); 
             
             if (position.IsColumn('a'))
                 currentCell.SetTopLeft(position.GetRow().ToString());
             if (y == heightWidth * 7)
                 currentCell.SetBottomRight(position.GetColumn().ToString());
-            
+            if (currentCell.GetCell().HasFigure())
+            {
+                currentCell.SetCenter(IconFigureFactory.Create(currentCell.GetCell().GetFigure()));
+            }
             this.Controls.Add(currentCell);
             isBlack = !isBlack;
 
@@ -74,6 +83,22 @@ partial class Form1
             else x += heightWidth;
         }
 
+    }
+    //todo: можно строго указать тип расширеного класса в случае использывание кастомных делегатов(требуется изучение)
+    // в будущем расширю 
+    void BtnCell_Click(Object sender, EventArgs e)
+    {
+        ButtonCell btnCell = sender as ButtonCell;
+        if (btnCell == null) return;
+        
+        if (btnCell.GetCell().HasFigure())
+        {
+            var moved = btnCell.GetCell().GetFigure().GetAvailableMoves(_chessboard);
+            foreach (var move in moved)
+            {
+                Console.WriteLine(move.GetPositionCode());
+            }
+        }
     }
     #endregion
 }
