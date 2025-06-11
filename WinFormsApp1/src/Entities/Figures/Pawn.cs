@@ -1,12 +1,11 @@
 using WinFormsApp1.Enums;
-using WinFormsApp1.Interfaces;
 using WinFormsApp1.ValueObjects;
 
 namespace WinFormsApp1.Entities.Figures;
 
 public class Pawn : BaseFigure
 {
-    public Pawn(FigureColor color, Position position) : base( color, position)
+    public Pawn(FigureColor color, Position position) : base(color, position)
     {
     }
     //пешка первый ход 2 вперед, последущиие ходы по 1, бъет на диоганаль на 1, перехват - не реализуем
@@ -18,22 +17,42 @@ public class Pawn : BaseFigure
         List<Position> moves = new List<Position>();
         bool isDefaultPosition = (Color == FigureColor.White && curRow == 2) ||
                                  (Color == FigureColor.Black && curRow == 7);
-        
 
-        
         int rowOneMore = GetNextRow(curRow);
-
+        Position oneMorePosition = Position.Make(curColumn, rowOneMore);
+        //moved
         if (isDefaultPosition)
         {
-            moves.Add(new Position(curColumn,rowOneMore));
-            moves.Add(new Position(curColumn, GetNextRow(rowOneMore)));
+            Position twoMorePosition = Position.Make(curColumn, GetNextRow(rowOneMore));
+
+            foreach (Position position in (Position[]) [oneMorePosition, twoMorePosition])
+            {
+                if (!chessboard.HasFigureByPosition(position))
+                    moves.Add(position);
+            }
         }
         else
         {
-            moves.Add(new Position(curColumn, rowOneMore));
+            moves.Add(oneMorePosition);
         }
-        
+
+        //attack
+        List<char> columnList = chessboard.GetListColumns();
+        char? leftAttackColumn = GetLeftColumn(curColumn, columnList);
+
+        if (leftAttackColumn.HasValue &&
+            chessboard.HasEnemyFigureByPosition(Position.Make(leftAttackColumn.Value, rowOneMore), GetEnemyColor()))
+        {
+            moves.Add(Position.Make(rowOneMore, leftAttackColumn.Value));
+        }
+
+        char? rightAttackColumn = GetLeftColumn(curColumn, columnList);
+        if (rightAttackColumn.HasValue &&
+            chessboard.HasEnemyFigureByPosition(Position.Make(rightAttackColumn.Value, rowOneMore), GetEnemyColor()))
+        {
+            moves.Add(Position.Make(rowOneMore, rightAttackColumn.Value));
+        }
+
         return moves;
     }
-    
 }

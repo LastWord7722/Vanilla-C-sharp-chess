@@ -1,3 +1,4 @@
+using WinFormsApp1.Enums;
 using WinFormsApp1.ValueObjects;
 
 namespace WinFormsApp1.Entities.Chessboard;
@@ -19,16 +20,16 @@ public class Chessboard
     public static Chessboard Make()
     {
         var cells = new Dictionary<Position, Cell>();
-        
+
         for (int i = 0; i < Size; i++)
         {
             foreach (char column in Columns)
             {
-                Position currentPosition = new Position(column, i+1);
+                Position currentPosition = new Position(column, i + 1);
                 cells[currentPosition] = new Cell(currentPosition);
             }
         }
-        
+
         return new Chessboard(cells);
     }
 
@@ -37,10 +38,14 @@ public class Chessboard
         return _cells;
     }
 
-    public Cell GetCellByPosition(Position position)
-    {
-        return _cells[position];
-    }
+    public Cell GetCellByPosition(Position position) =>
+        _cells[position];
+
+    public bool HasFigureByPosition(Position position) =>
+        GetCellByPosition(position).HasFigure();
+
+    public bool HasEnemyFigureByPosition(Position position, FigureColor enemyFigureColor) =>
+        HasFigureByPosition(position) && GetCellByPosition(position).GetFigure()!.GetColor() == enemyFigureColor;
 
     public List<char> GetListColumns()
     {
