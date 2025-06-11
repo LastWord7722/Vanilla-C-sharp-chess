@@ -20,7 +20,9 @@ public abstract class BaseFigure
         int nextRow = Color == FigureColor.White ? currentRow + 1 : currentRow - 1;
         return nextRow < 1 || nextRow > 8 ? -1 : nextRow;
     }
+
     protected FigureColor GetEnemyColor() => Color == FigureColor.White ? FigureColor.Black : FigureColor.White;
+
     protected char? GetLeftColumn(char currentColumn, List<char> columns)
     {
         int indexCurrentColumn = columns.IndexOf(currentColumn);

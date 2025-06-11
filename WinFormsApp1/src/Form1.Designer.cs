@@ -50,6 +50,8 @@ partial class Form1
     {
         _chessboard = new ArrangerFigure(Chessboard.Make()).ClassicArrangement();
     }
+    
+    //todo: возможно вынести доску в отденьную сущность формы, нужно изучить 
     private void rendreChessboard()
     {
         int heightWidth = 50;
@@ -86,6 +88,8 @@ partial class Form1
     }
     //todo: можно строго указать тип расширеного класса в случае использывание кастомных делегатов(требуется изучение)
     // в будущем расширю 
+    
+    //todo: нужно создать сервис по типу gameService чтоб из формы вынести логику и реализовать движение 
     void BtnCell_Click(Object sender, EventArgs e)
     {
         ButtonCell btnCell = sender as ButtonCell;
