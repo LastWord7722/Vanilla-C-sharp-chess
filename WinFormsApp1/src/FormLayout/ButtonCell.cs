@@ -4,41 +4,45 @@ namespace WinFormsApp1.FormLayout;
 
 public class ButtonCell : Button
 {
-    private Cell _cell;
+    private readonly Cell _cell;
+    private Color _defaultColor;
     private string _topLeftText = "";
     private string _centerText = "";
     private string _bottomRightText = "";
-    public ButtonCell(Cell cell)
+    public ButtonCell(Cell cell, Color color)
     {
         _cell = cell;
+        _defaultColor = color;
+        SetBackGroundColor(_defaultColor);
     }
     
     public static ButtonCell Make(Cell cell, bool isBlack, int x, int y)
     {
-
-
         Color defaultColor = isBlack 
             ? Color.FromArgb(115, 149, 82) 
             : Color.FromArgb(240, 241, 214);
         
-        ButtonCell btn = new ButtonCell(cell);
+        ButtonCell btn = new ButtonCell(cell,defaultColor);
         btn.Size = new Size(50, 50);
         btn.Location = new Point(x, y);
-        btn.SetBackGroundColor(defaultColor);
-
+        
         btn.ForeColor = Color.Black;
         
         btn.FlatStyle = FlatStyle.Flat;
         btn.FlatAppearance.BorderSize = 0;
         btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 255, 51);
         btn.FlatAppearance.MouseDownBackColor = defaultColor;
-
-
+        
         btn.TabStop = false;
         btn.Margin = new Padding(0);
         btn.Padding = new Padding(0);
         
         return btn;
+    }
+
+    public void ResetColorToDefault()
+    {
+        SetBackGroundColor(_defaultColor);
     }
     public ButtonCell SetBackGroundColor(Color color)
     {

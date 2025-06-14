@@ -20,22 +20,8 @@ public class Pawn : BaseFigure
 
         int rowOneMore = GetNextRow(curRow);
         Position oneMorePosition = Position.Make(curColumn, rowOneMore);
-        //moved
-        if (isDefaultPosition)
-        {
-            Position twoMorePosition = Position.Make(curColumn, GetNextRow(rowOneMore));
-
-            foreach (Position position in (Position[]) [oneMorePosition, twoMorePosition])
-            {
-                if (!chessboard.HasFigureByPosition(position))
-                    moves.Add(position);
-            }
-        }
-        else
-        {
-            moves.Add(oneMorePosition);
-        }
-
+        
+        
         //attack
         List<char> columnList = chessboard.GetListColumns();
         char? leftAttackColumn = GetLeftColumn(curColumn, columnList);
@@ -46,13 +32,33 @@ public class Pawn : BaseFigure
             moves.Add(Position.Make(rowOneMore, leftAttackColumn.Value));
         }
 
-        char? rightAttackColumn = GetLeftColumn(curColumn, columnList);
+        char? rightAttackColumn = GetRightColumn(curColumn, columnList);
         if (rightAttackColumn.HasValue &&
             chessboard.HasEnemyFigureByPosition(Position.Make(rightAttackColumn.Value, rowOneMore), GetEnemyColor()))
         {
             moves.Add(Position.Make(rowOneMore, rightAttackColumn.Value));
         }
-
+        
+        //moved
+        if (chessboard.HasFigureByPosition(oneMorePosition))
+        {
+            return moves;
+        }
+        
+        if (isDefaultPosition)
+        {
+            Position twoMorePosition = Position.Make(curColumn, GetNextRow(rowOneMore));
+            
+            foreach (Position position in (Position[]) [oneMorePosition, twoMorePosition])
+            {
+                if (!chessboard.HasFigureByPosition(position))
+                    moves.Add(position);
+            }
+        }
+        else
+        {
+            moves.Add(oneMorePosition);
+        }
         return moves;
     }
 }
