@@ -7,7 +7,7 @@ public class Chessboard
 {
     private static readonly byte Size = 8;
 
-    private static readonly List<char> Columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    private static readonly char[] Columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
     //char is [A-H],
     private Dictionary<Position, Cell> _cells;
@@ -43,11 +43,12 @@ public class Chessboard
 
     public bool HasFigureByPosition(Position position) =>
         GetCellByPosition(position).HasFigure();
-
+    public bool HasUnionFigureByPosition(Position position, FigureColor figureColor) =>
+        GetCellByPosition(position).HasFigure() && GetCellByPosition(position).GetFigure()!.GetColor() == figureColor;
     public bool HasEnemyFigureByPosition(Position position, FigureColor enemyFigureColor) =>
         HasFigureByPosition(position) && GetCellByPosition(position).GetFigure()!.GetColor() == enemyFigureColor;
 
-    public List<char> GetListColumns()
+    public char[] GetListColumns()
     {
         return Columns;
     }

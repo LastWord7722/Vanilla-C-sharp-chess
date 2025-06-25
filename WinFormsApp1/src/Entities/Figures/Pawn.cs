@@ -23,7 +23,7 @@ public class Pawn : BaseFigure
         
         
         //attack
-        List<char> columnList = chessboard.GetListColumns();
+        char[] columnList = chessboard.GetListColumns();
         char? leftAttackColumn = GetLeftColumn(curColumn, columnList);
 
         if (leftAttackColumn.HasValue &&

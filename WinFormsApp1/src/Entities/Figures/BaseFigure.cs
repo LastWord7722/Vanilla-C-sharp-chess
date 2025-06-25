@@ -14,7 +14,11 @@ public abstract class BaseFigure
         Position = position;
         Color = color;
     }
-
+    protected int GetPreviousRow(int currentRow)
+    {
+        int previousRow = Color == FigureColor.White ? currentRow - 1 : currentRow + 1;
+        return previousRow < 1 || previousRow > 8 ? -1 : previousRow;
+    }
     protected int GetNextRow(int currentRow)
     {
         int nextRow = Color == FigureColor.White ? currentRow + 1 : currentRow - 1;
@@ -23,20 +27,19 @@ public abstract class BaseFigure
 
     protected FigureColor GetEnemyColor() => Color == FigureColor.White ? FigureColor.Black : FigureColor.White;
 
-    protected char? GetLeftColumn(char currentColumn, List<char> columns)
+    protected char? GetLeftColumn(char currentColumn, char[] columns)
     {
-        int indexCurrentColumn = columns.IndexOf(currentColumn);
+        int indexCurrentColumn = Array.IndexOf(columns, currentColumn);
         int leftColumnIndex = Color == FigureColor.White ? indexCurrentColumn + 1 : indexCurrentColumn - 1;
-
-        return leftColumnIndex < 1 || leftColumnIndex > 7 ? null : columns[leftColumnIndex];
+        return leftColumnIndex < 0 || leftColumnIndex >= columns.Length ? null : columns[leftColumnIndex];
     }
 
-    protected char? GetRightColumn(char currentColumn, List<char> columns)
+    protected char? GetRightColumn(char currentColumn, char[] columns)
     {
-        int indexCurrentColumn = columns.IndexOf(currentColumn);
+        int indexCurrentColumn = Array.IndexOf(columns, currentColumn);
         int rightColumnIndex = Color == FigureColor.White ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
-
-        return rightColumnIndex < 1 || rightColumnIndex > 7 ? null : columns[rightColumnIndex];
+        
+        return rightColumnIndex < 0 || rightColumnIndex >= columns.Length ? null : columns[rightColumnIndex];
     }
 
     public abstract List<Position> GetAvailableMoves(Chessboard.Chessboard chessboard);

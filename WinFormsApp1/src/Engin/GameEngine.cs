@@ -52,6 +52,8 @@ public class GameEngine
 
         _selectedBtnFigure = btnCell;
         List<Position> availableMoves = _selectedBtnFigure.GetCell().GetFigure()!.GetAvailableMoves(_chessboard);
+        // на клоне доски будем делать каждый возможный ход и если ход возмжный будет красить кнопки, скорее всего\
+        // состояние будет у сервиса...
         foreach (var move in availableMoves)
         {
             _buttonCells[move].SetBackGroundColor(ColorHelper.GetMoveColor());
@@ -69,7 +71,7 @@ public class GameEngine
             return;
         }
         List<Position> availableMoves = _selectedBtnFigure!.GetCell().GetFigure()!.GetAvailableMoves(_chessboard);
-        
+        // сосотояние возможных ходов делегируем отлеьному классу, как на отрисовке ходов(тот же класс) какой то валидатор
         if (!availableMoves.Contains(btnMoveTo.GetCell().GetPosition()))
         {
             return;
