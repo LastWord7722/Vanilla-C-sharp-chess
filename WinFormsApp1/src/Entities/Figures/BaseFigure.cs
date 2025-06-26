@@ -14,6 +14,9 @@ public abstract class BaseFigure
         Position = position;
         Color = color;
     }
+//todo: методы получения позиции от текущей позиции стоит пересмотреть
+//т.к. зависимость цвета есть только у пешки, для остольных цвет не важен
+// для всех остольных возможность хода не зависит от цвета
     protected int GetPreviousRow(int currentRow)
     {
         int previousRow = Color == FigureColor.White ? currentRow - 1 : currentRow + 1;
