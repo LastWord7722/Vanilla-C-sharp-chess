@@ -1,3 +1,4 @@
+using WinFormsApp1.Entities.Figures;
 using WinFormsApp1.Enums;
 using WinFormsApp1.ValueObjects;
 
@@ -48,6 +49,12 @@ public class Chessboard
     public bool HasEnemyFigureByPosition(Position position, FigureColor enemyFigureColor) =>
         HasFigureByPosition(position) && GetCellByPosition(position).GetFigure()!.GetColor() == enemyFigureColor;
 
+    public BaseFigure GetKingByColor(FigureColor figureColor)
+    {
+        return GetCells()
+            .First(kv => kv.Value.HasFigure() && kv.Value.GetFigure()!.GetColor() == figureColor && 
+                               kv.Value.GetFigure()!.GetType().Name == "King")!.Value.GetFigure()!;
+    }
     public char[] GetListColumns()
     {
         return Columns;

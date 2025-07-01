@@ -64,7 +64,6 @@ public class King : BaseFigure
             !chessboard.HasUnionFigureByPosition(Position.Make(targetRow, targetColumn!.Value), GetColor()))
         {
             moves.Add(Position.Make(targetRow, targetColumn.Value));
-            Console.WriteLine(1111);
         }
         
         return moves;

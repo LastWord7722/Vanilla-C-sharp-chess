@@ -108,5 +108,7 @@ public class GameEngine
         {
             HandleMoveFigure(btnCell);
         }
+        
+        Console.WriteLine(_movedService.DetectCheck(_chessboard, _colorService.GetCurrentColor()));
     }
 }

@@ -22,7 +22,7 @@ public class Cell
         return _figure != null;
     }
 
-    public void SetFigure(BaseFigure figure)
+    public void SetFigure(BaseFigure? figure)
     {
         _figure = figure;
     }
