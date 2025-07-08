@@ -152,4 +152,9 @@ public class Queen : BaseFigure
 
         return moves;
     }
+    
+    public override BaseFigure Clone()
+    {
+        return new Queen(Color, Position);
+    }
 }

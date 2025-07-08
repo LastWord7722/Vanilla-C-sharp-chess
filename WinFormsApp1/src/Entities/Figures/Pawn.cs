@@ -61,4 +61,9 @@ public class Pawn : BaseFigure
         }
         return moves;
     }
+    
+    public override BaseFigure Clone()
+    {
+        return new Pawn(Color, Position);
+    }
 }

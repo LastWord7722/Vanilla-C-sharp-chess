@@ -86,4 +86,9 @@ public class Knight : BaseFigure
         moves.AddRange(ProcessTopBottom(chessboard, false));
         return moves;
     }
+    
+    public override BaseFigure Clone()
+    {
+        return new Knight(Color, Position);
+    }
 }

@@ -72,4 +72,6 @@ public abstract class BaseFigure
     {
         return _alive;
     }
+
+    public abstract BaseFigure Clone();
 }

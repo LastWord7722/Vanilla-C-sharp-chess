@@ -44,19 +44,37 @@ public class Chessboard
 
     public bool HasFigureByPosition(Position position) =>
         GetCellByPosition(position).HasFigure();
+
     public bool HasUnionFigureByPosition(Position position, FigureColor figureColor) =>
         GetCellByPosition(position).HasFigure() && GetCellByPosition(position).GetFigure()!.GetColor() == figureColor;
+
     public bool HasEnemyFigureByPosition(Position position, FigureColor enemyFigureColor) =>
         HasFigureByPosition(position) && GetCellByPosition(position).GetFigure()!.GetColor() == enemyFigureColor;
 
     public BaseFigure GetKingByColor(FigureColor figureColor)
     {
         return GetCells()
-            .First(kv => kv.Value.HasFigure() && kv.Value.GetFigure()!.GetColor() == figureColor && 
-                               kv.Value.GetFigure()!.GetType().Name == "King")!.Value.GetFigure()!;
+            .First(kv => kv.Value.HasFigure() && kv.Value.GetFigure()!.GetColor() == figureColor &&
+                         kv.Value.GetFigure()!.GetType().Name == "King")!.Value.GetFigure()!;
     }
+
     public char[] GetListColumns()
     {
         return Columns;
     }
+
+    public Chessboard DeppClone()
+    {
+        var newCells = new Dictionary<Position, Cell>();
+
+        foreach (var kv in _cells)
+        {
+            var position = new Position(kv.Key.GetColumn(), kv.Key.GetRow());
+            var cellClone = kv.Value.Clone();
+            newCells[position] = cellClone;
+        }
+
+        return new Chessboard(newCells);
+    }
+
 }

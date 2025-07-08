@@ -93,4 +93,8 @@ public class King : BaseFigure
         moves.AddRange(ProcessVertical(chessboard, false));
         return moves;
     }
+    public override BaseFigure Clone()
+    {
+        return new King(Color, Position);
+    }
 }

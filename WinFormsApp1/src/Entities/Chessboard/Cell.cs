@@ -31,4 +31,11 @@ public class Cell
     {
         return _position;
     }
+    
+    public Cell Clone()
+    {
+        Cell cloneCell = new Cell(new Position(_position.GetColumn(), _position.GetRow()));
+        cloneCell.SetFigure(_figure?.Clone());
+        return cloneCell;
+    }
 }

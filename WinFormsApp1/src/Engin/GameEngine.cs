@@ -1,5 +1,4 @@
 using WinFormsApp1.Entities.Chessboard;
-using WinFormsApp1.Entities.Figures;
 using WinFormsApp1.Factories;
 using WinFormsApp1.FormLayout;
 using WinFormsApp1.Helpers;
@@ -51,7 +50,8 @@ public class GameEngine
         }
 
         _selectedBtnFigure = btnCell;
-        List<Position> availableMoves = _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().GetFigure()!,_chessboard);
+        List<Position> availableMoves =
+            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().GetFigure()!, _chessboard);
         // на клоне доски будем делать каждый возможный ход и если ход возмжный будет красить кнопки, скорее всего\
         // состояние будет у сервиса...
         foreach (var move in availableMoves)
@@ -64,19 +64,22 @@ public class GameEngine
     {
         return _selectedBtnFigure == null;
     }
+
     private void HandleMoveFigure(ButtonCell btnMoveTo)
     {
         if (SelectedBtnIsNull())
         {
             return;
         }
-        List<Position> availableMoves = _selectedBtnFigure!.GetCell().GetFigure()!.GetAvailableMoves(_chessboard);
+
+        List<Position> availableMoves =
+            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure!.GetCell().GetFigure()!, _chessboard);
         // сосотояние возможных ходов делегируем отлеьному классу, как на отрисовке ходов(тот же класс) какой то валидатор
         if (!availableMoves.Contains(btnMoveTo.GetCell().GetPosition()))
         {
             return;
         }
-        
+
         _movedService.MoveFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell());
         _selectedBtnFigure = null;
         foreach (var (_, cell) in _buttonCells)
@@ -89,7 +92,7 @@ public class GameEngine
             {
                 cell.SetCenter("");
             }
-            
+
             cell.ResetColorToDefault();
         }
 
@@ -101,11 +104,24 @@ public class GameEngine
                 "Игра окончена",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
-            );        }
+            );
+            return;
+        }
     }
 
     public void HandleClick(ButtonCell btnCell)
     {
+        if (!_validationMovedService.DetectNotCheckMate(_chessboard, _colorService.GetCurrentColor()))
+        {
+            MessageBox.Show(
+                $"{_colorService.GetOtherColor()} победили! Шах и мат.",
+                "Игра окончена",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+            return;
+        }
+
         if (btnCell.GetCell().HasFigure() &&
             btnCell.GetCell().GetFigure()!.GetColor() == _colorService.GetCurrentColor())
         {

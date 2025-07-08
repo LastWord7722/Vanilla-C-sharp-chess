@@ -61,4 +61,9 @@ public class Bishop : BaseFigure
 
         return moves;
     }
+
+    public override BaseFigure Clone()
+    {
+        return new Bishop(Color, Position);
+    }
 }

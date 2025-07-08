@@ -97,4 +97,9 @@ public class Rook : BaseFigure
 
         return moves;
     }
+    
+    public override BaseFigure Clone()
+    {
+        return new Rook(Color, Position);
+    }
 }
