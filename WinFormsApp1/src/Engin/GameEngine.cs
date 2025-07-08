@@ -51,7 +51,7 @@ public class GameEngine
         }
 
         _selectedBtnFigure = btnCell;
-        List<Position> availableMoves = _selectedBtnFigure.GetCell().GetFigure()!.GetAvailableMoves(_chessboard);
+        List<Position> availableMoves = _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().GetFigure()!,_chessboard);
         // на клоне доски будем делать каждый возможный ход и если ход возмжный будет красить кнопки, скорее всего\
         // состояние будет у сервиса...
         foreach (var move in availableMoves)
@@ -77,7 +77,7 @@ public class GameEngine
             return;
         }
         
-        _movedService.MoveFigure(btnMoveTo.GetCell(), _selectedBtnFigure);
+        _movedService.MoveFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell());
         _selectedBtnFigure = null;
         foreach (var (_, cell) in _buttonCells)
         {
@@ -89,11 +89,19 @@ public class GameEngine
             {
                 cell.SetCenter("");
             }
-
+            
             cell.ResetColorToDefault();
         }
 
         _colorService.ToogleColor();
+        if (!_validationMovedService.DetectNotCheckMate(_chessboard, _colorService.GetCurrentColor()))
+        {
+            MessageBox.Show(
+                $"{_colorService.GetOtherColor()} победили! Шах и мат.",
+                "Игра окончена",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );        }
     }
 
     public void HandleClick(ButtonCell btnCell)
@@ -108,7 +116,5 @@ public class GameEngine
         {
             HandleMoveFigure(btnCell);
         }
-        
-        Console.WriteLine(_movedService.DetectCheck(_chessboard, _colorService.GetCurrentColor()));
     }
 }

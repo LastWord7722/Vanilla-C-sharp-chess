@@ -6,4 +6,5 @@ public interface IColorService
 {
     public void ToogleColor();
     public FigureColor GetCurrentColor();
+    public FigureColor GetOtherColor();
 }

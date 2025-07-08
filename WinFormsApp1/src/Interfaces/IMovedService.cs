@@ -6,6 +6,5 @@ namespace WinFormsApp1.Interfaces;
 
 public interface IMovedService
 {
-    public void MoveFigure(Cell toMovCell, ButtonCell selectedBtn);
-    public bool DetectCheck(Chessboard chessboard, FigureColor checkedColor);
+    public void MoveFigure(Cell toMovCell, Cell currentCell);
 }

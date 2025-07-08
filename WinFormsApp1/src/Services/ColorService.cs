@@ -9,11 +9,16 @@ public class ColorService : IColorService
 
     public void ToogleColor()
     {
-        _figureColor = _figureColor == FigureColor.White ? FigureColor.Black : FigureColor.White;
+        _figureColor = GetOtherColor();
     }
 
     public FigureColor GetCurrentColor()
     {
         return _figureColor;
+    }
+    
+    public FigureColor GetOtherColor()
+    {
+        return _figureColor == FigureColor.White ? FigureColor.Black : FigureColor.White;
     }
 }
