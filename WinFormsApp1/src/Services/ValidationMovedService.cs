@@ -20,14 +20,14 @@ public class ValidationMovedService : IValidationMovedService
         foreach (var pos in figure.GetAvailableMoves(chessboard))
         {
             Chessboard chessboardClone = chessboard.DeppClone(); 
-            Position oldPosFigure = figure.GetPosition();
+            Position oldPosFigure = figure.Position;
             _movedService.MoveFigure(
                 chessboardClone.GetCellByPosition(pos),
                 chessboardClone.GetCellByPosition(oldPosFigure)
             );
             
-            bool haveCheck = DetectCheck(chessboardClone, figure.GetColor());
-            // Console.WriteLine($"{figure.GetColor()}, {figure.GetType().Name}, {pos.GetPositionCode()}, {haveCheck}");
+            bool haveCheck = DetectCheck(chessboardClone, figure.Color);
+            // Console.WriteLine($"{figure.Color}, {figure.GetType().Name}, {pos.GetPositionCode()}, {haveCheck}");
 
             // _movedService.MoveFigure(
             //     chessboardClone.GetCellByPosition(oldPosFigure),
@@ -46,18 +46,18 @@ public class ValidationMovedService : IValidationMovedService
     public bool DetectNotCheckMate(Chessboard chessboard, FigureColor checkedColor)
     {
         bool isNotCheckMate = true;
-        var filteredCells = chessboard.GetCells()
-            .Where(kv => kv.Value.HasFigure() && kv.Value.GetFigure()!.GetColor() == checkedColor)
+        var filteredCells = chessboard.Cells
+            .Where(kv => kv.Value.HasFigure() && kv.Value.Figure!.Color == checkedColor)
             .ToDictionary(kv => kv.Key, kv => kv.Value);
 
         foreach (var cell in filteredCells)
         {
-            isNotCheckMate = GetRealAvailableMoves(cell.Value.GetFigure()!,chessboard).Count > 0;
+            isNotCheckMate = GetRealAvailableMoves(cell.Value.Figure!,chessboard).Count > 0;
             
             if (isNotCheckMate)
             {
-                var figure = cell.Value.GetFigure()!;
-                Console.WriteLine($"{figure.GetColor()}, {figure.GetType().Name}, {cell.Value.GetPosition().GetPositionCode()}");
+                var figure = cell.Value.Figure!;
+                Console.WriteLine($"{figure.Color}, {figure.GetType().Name}, {cell.Value.Position.GetPositionCode()}");
 
                 break;
             }
@@ -71,17 +71,17 @@ public class ValidationMovedService : IValidationMovedService
         bool flag = false;
         var enemyKing = chessboard.GetKingByColor(checkedColor);
         
-        var filteredCells = chessboard.GetCells()
-            .Where(kv => kv.Value.HasFigure() && kv.Value.GetFigure()!.GetColor() != checkedColor)
+        var filteredCells = chessboard.Cells
+            .Where(kv => kv.Value.HasFigure() && kv.Value.Figure!.Color != checkedColor)
             .ToDictionary(kv => kv.Key, kv => kv.Value);
 
         foreach (var cell in filteredCells)
         {
-            BaseFigure figure = cell.Value.GetFigure()!;
+            BaseFigure figure = cell.Value.Figure!;
 
             foreach (var pos in figure!.GetAvailableMoves(chessboard))
             {
-                if (pos == enemyKing.GetPosition())
+                if (pos == enemyKing.Position)
                 {
                     flag = true;
                 }

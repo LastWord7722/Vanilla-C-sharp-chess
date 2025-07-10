@@ -43,7 +43,7 @@ public class GameEngine
     {
         if (_selectedBtnFigure != null)
         {
-            foreach (var move in _selectedBtnFigure.GetCell().GetFigure()!.GetAvailableMoves(_chessboard))
+            foreach (var move in _selectedBtnFigure.GetCell().Figure!.GetAvailableMoves(_chessboard))
             {
                 _buttonCells[move].ResetColorToDefault();
             }
@@ -51,7 +51,7 @@ public class GameEngine
 
         _selectedBtnFigure = btnCell;
         List<Position> availableMoves =
-            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().GetFigure()!, _chessboard);
+            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, _chessboard);
         // на клоне доски будем делать каждый возможный ход и если ход возмжный будет красить кнопки, скорее всего\
         // состояние будет у сервиса...
         foreach (var move in availableMoves)
@@ -73,9 +73,9 @@ public class GameEngine
         }
 
         List<Position> availableMoves =
-            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure!.GetCell().GetFigure()!, _chessboard);
+            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure!.GetCell().Figure!, _chessboard);
         // сосотояние возможных ходов делегируем отлеьному классу, как на отрисовке ходов(тот же класс) какой то валидатор
-        if (!availableMoves.Contains(btnMoveTo.GetCell().GetPosition()))
+        if (!availableMoves.Contains(btnMoveTo.GetCell().Position))
         {
             return;
         }
@@ -86,7 +86,7 @@ public class GameEngine
         {
             if (cell.GetCell().HasFigure())
             {
-                cell.SetCenter(IconFigureFactory.Create(cell.GetCell().GetFigure()!));
+                cell.SetCenter(IconFigureFactory.Create(cell.GetCell().Figure!));
             }
             else
             {
@@ -123,7 +123,7 @@ public class GameEngine
         }
 
         if (btnCell.GetCell().HasFigure() &&
-            btnCell.GetCell().GetFigure()!.GetColor() == _colorService.GetCurrentColor())
+            btnCell.GetCell().Figure!.Color == _colorService.GetCurrentColor())
         {
             HandleClickFigure(btnCell);
         }

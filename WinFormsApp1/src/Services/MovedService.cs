@@ -10,8 +10,8 @@ public class MovedService : IMovedService
 {
     public void MoveFigure(Cell toMovCell, Cell currentCell)
     {
-        currentCell.GetFigure()!.SetPosition(toMovCell.GetPosition());
-        toMovCell.SetFigure(currentCell.GetFigure()!);
-        currentCell.SetFigure(null);
+        currentCell.Figure!.Position = toMovCell.Position;
+        toMovCell.Figure = currentCell.Figure!;
+        currentCell.Figure = null;
     }
 }

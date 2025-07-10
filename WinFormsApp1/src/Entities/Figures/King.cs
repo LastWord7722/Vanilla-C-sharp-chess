@@ -18,7 +18,7 @@ public class King : BaseFigure
 
         int targetRow = isTop ? GetNextRow(currentRow) : GetPreviousRow(currentRow);
 
-        if (targetRow != -1 && !chessboard.HasUnionFigureByPosition(Position.Make(targetRow, currentColumn), GetColor()))
+        if (targetRow != -1 && !chessboard.HasUnionFigureByPosition(Position.Make(targetRow, currentColumn), Color))
         {
             moves.Add(Position.Make(targetRow, currentColumn));
         }
@@ -36,7 +36,7 @@ public class King : BaseFigure
 
         char? targetColumn = isLeft ? GetLeftColumn(currentColumn,listColumns) : GetRightColumn(currentColumn,listColumns);
 
-        if (targetColumn.HasValue && !chessboard.HasUnionFigureByPosition(Position.Make(currentRow, targetColumn!.Value), GetColor()))
+        if (targetColumn.HasValue && !chessboard.HasUnionFigureByPosition(Position.Make(currentRow, targetColumn!.Value), Color))
         {
             moves.Add(Position.Make(currentRow, targetColumn!.Value));
         }
@@ -61,7 +61,7 @@ public class King : BaseFigure
             : GetRightColumn(currentColumn,listColumns);
         
         if (targetRow != -1 && targetColumn.HasValue && 
-            !chessboard.HasUnionFigureByPosition(Position.Make(targetRow, targetColumn!.Value), GetColor()))
+            !chessboard.HasUnionFigureByPosition(Position.Make(targetRow, targetColumn!.Value), Color))
         {
             moves.Add(Position.Make(targetRow, targetColumn.Value));
         }

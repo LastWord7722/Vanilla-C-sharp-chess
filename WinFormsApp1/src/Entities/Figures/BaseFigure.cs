@@ -5,23 +5,24 @@ namespace WinFormsApp1.Entities.Figures;
 
 public abstract class BaseFigure
 {
-    protected Position Position;
-    protected FigureColor Color;
-    private bool _alive = true;
+    public Position Position { get; set; }
+    public FigureColor Color { get; }
 
     protected BaseFigure(FigureColor color, Position position)
     {
         Position = position;
         Color = color;
     }
-//todo: методы получения позиции от текущей позиции стоит пересмотреть
-//т.к. зависимость цвета есть только у пешки, для остольных цвет не важен
-// для всех остольных возможность хода не зависит от цвета
+
+    //todo: методы получения позиции от текущей позиции стоит пересмотреть
+    //т.к. зависимость цвета есть только у пешки, для остольных цвет не важен
+    // для всех остольных возможность хода не зависит от цвета
     protected int GetPreviousRow(int currentRow)
     {
         int previousRow = Color == FigureColor.White ? currentRow - 1 : currentRow + 1;
         return previousRow < 1 || previousRow > 8 ? -1 : previousRow;
     }
+
     protected int GetNextRow(int currentRow)
     {
         int nextRow = Color == FigureColor.White ? currentRow + 1 : currentRow - 1;
@@ -41,37 +42,10 @@ public abstract class BaseFigure
     {
         int indexCurrentColumn = Array.IndexOf(columns, currentColumn);
         int rightColumnIndex = Color == FigureColor.White ? indexCurrentColumn - 1 : indexCurrentColumn + 1;
-        
+
         return rightColumnIndex < 0 || rightColumnIndex >= columns.Length ? null : columns[rightColumnIndex];
     }
 
     public abstract List<Position> GetAvailableMoves(Chessboard.Chessboard chessboard);
-
-    public Position GetPosition()
-    {
-        return Position;
-    }
-
-    public BaseFigure SetPosition(Position position)
-    {
-        Position = position;
-        return this;
-    }
-
-    public FigureColor GetColor()
-    {
-        return Color;
-    }
-
-    public void ToNotAlive()
-    {
-        _alive = false;
-    }
-
-    public bool IsAlive()
-    {
-        return _alive;
-    }
-
     public abstract BaseFigure Clone();
 }

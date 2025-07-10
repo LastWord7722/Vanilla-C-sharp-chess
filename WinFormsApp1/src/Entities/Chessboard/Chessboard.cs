@@ -11,11 +11,11 @@ public class Chessboard
     private static readonly char[] Columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
     //char is [A-H],
-    private Dictionary<Position, Cell> _cells;
+    public Dictionary<Position, Cell> Cells { get; }
 
     private Chessboard(Dictionary<Position, Cell> cells)
     {
-        _cells = cells;
+        Cells = cells;
     }
 
     public static Chessboard Make()
@@ -33,29 +33,24 @@ public class Chessboard
 
         return new Chessboard(cells);
     }
-
-    public Dictionary<Position, Cell> GetCells()
-    {
-        return _cells;
-    }
-
+    
     public Cell GetCellByPosition(Position position) =>
-        _cells[position];
+        Cells[position];
 
     public bool HasFigureByPosition(Position position) =>
         GetCellByPosition(position).HasFigure();
 
     public bool HasUnionFigureByPosition(Position position, FigureColor figureColor) =>
-        GetCellByPosition(position).HasFigure() && GetCellByPosition(position).GetFigure()!.GetColor() == figureColor;
+        GetCellByPosition(position).HasFigure() && GetCellByPosition(position).Figure!.Color == figureColor;
 
     public bool HasEnemyFigureByPosition(Position position, FigureColor enemyFigureColor) =>
-        HasFigureByPosition(position) && GetCellByPosition(position).GetFigure()!.GetColor() == enemyFigureColor;
+        HasFigureByPosition(position) && GetCellByPosition(position).Figure!.Color == enemyFigureColor;
 
     public BaseFigure GetKingByColor(FigureColor figureColor)
     {
-        return GetCells()
-            .First(kv => kv.Value.HasFigure() && kv.Value.GetFigure()!.GetColor() == figureColor &&
-                         kv.Value.GetFigure()!.GetType().Name == "King")!.Value.GetFigure()!;
+        return Cells
+            .First(kv => kv.Value.HasFigure() && kv.Value.Figure!.Color == figureColor &&
+                         kv.Value.Figure!.GetType().Name == "King")!.Value.Figure!;
     }
 
     public char[] GetListColumns()
@@ -67,7 +62,7 @@ public class Chessboard
     {
         var newCells = new Dictionary<Position, Cell>();
 
-        foreach (var kv in _cells)
+        foreach (var kv in Cells)
         {
             var position = new Position(kv.Key.GetColumn(), kv.Key.GetRow());
             var cellClone = kv.Value.Clone();

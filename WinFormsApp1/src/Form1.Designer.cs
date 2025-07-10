@@ -63,20 +63,20 @@ partial class Form1
         int x = 0;
         int y = 0;
         bool isBlack = false;
-        var sortedCells = chessboard.GetCells().OrderByDescending(kvp => kvp.Key.GetRow());
+        var sortedCells = chessboard.Cells.OrderByDescending(kvp => kvp.Key.GetRow());
 
         foreach (var (_, cell) in sortedCells)
         {
             ButtonCell currentCell = ButtonCell.Make(cell, isBlack, x,y).SetClickEvent(BtnCell_Click);
-            Position position = cell.GetPosition(); 
-            buttonCells.Add(cell.GetPosition(), currentCell);
+            Position position = cell.Position; 
+            buttonCells.Add(cell.Position, currentCell);
             if (position.IsColumn('a'))
                 currentCell.SetTopLeft(position.GetRow().ToString());
             if (y == heightWidth * 7)
                 currentCell.SetBottomRight(position.GetColumn().ToString());
             if (currentCell.GetCell().HasFigure())
             {
-                currentCell.SetCenter(IconFigureFactory.Create(currentCell.GetCell().GetFigure()));
+                currentCell.SetCenter(IconFigureFactory.Create(currentCell.GetCell().Figure));
             }
             this.Controls.Add(currentCell);
             isBlack = !isBlack;

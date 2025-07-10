@@ -38,6 +38,6 @@ public class IconFigureFactory
     public static string Create(BaseFigure figure)
     {
         //todo: add handler exception? 
-        return MAP[figure.GetColor()][figure.GetType()];
+        return MAP[figure.Color][figure.GetType()];
     }
 }

@@ -19,7 +19,7 @@ public class ArrangerFigure
         // разобраться с KeyValuePair
         foreach (KeyValuePair<Position, BaseFigure> item in DefaultFigureLayout.GetLayout())
         {
-            _chessboard.GetCellByPosition(item.Key).SetFigure(item.Value);
+            _chessboard.GetCellByPosition(item.Key).Figure = item.Value;
         }
         return _chessboard;
     }
