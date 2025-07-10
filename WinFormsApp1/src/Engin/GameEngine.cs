@@ -1,4 +1,5 @@
 using WinFormsApp1.Entities.Chessboard;
+using WinFormsApp1.Enums;
 using WinFormsApp1.Factories;
 using WinFormsApp1.FormLayout;
 using WinFormsApp1.Helpers;
@@ -12,7 +13,7 @@ public class GameEngine
     //todo: нужно подумать как вынести ui из логики Dictionary<Position, ButtonCell> _buttonCells
     private IMovedService _movedService;
     private IValidationMovedService _validationMovedService;
-    private IColorService _colorService;
+    private IStateService _stateService;
     private Chessboard _chessboard;
     private ButtonCell? _selectedBtnFigure;
     private Dictionary<Position, ButtonCell> _buttonCells;
@@ -20,7 +21,7 @@ public class GameEngine
 
     public GameEngine(
         IMovedService movedService,
-        IColorService colorService,
+        IStateService colorService,
         IValidationMovedService validationMovedService,
         Chessboard chessboard,
         Dictionary<Position, ButtonCell> buttonCells
@@ -28,7 +29,7 @@ public class GameEngine
     {
         _movedService = movedService;
         _validationMovedService = validationMovedService;
-        _colorService = colorService;
+        _stateService = colorService;
         _chessboard = chessboard;
         _buttonCells = buttonCells;
     }
@@ -72,9 +73,8 @@ public class GameEngine
             return;
         }
 
-        List<Position> availableMoves =
+        List<Position> availableMoves = 
             _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure!.GetCell().Figure!, _chessboard);
-        // сосотояние возможных ходов делегируем отлеьному классу, как на отрисовке ходов(тот же класс) какой то валидатор
         if (!availableMoves.Contains(btnMoveTo.GetCell().Position))
         {
             return;
@@ -82,6 +82,12 @@ public class GameEngine
 
         _movedService.MoveFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell());
         _selectedBtnFigure = null;
+
+
+        FigureColor figureColor = _stateService.GetCurrentColor();
+        //todo: можно проврять не всех а только ту пешку которая ходила, я думаю это норм оптимизация
+        _stateService.CheckAndPromotePawns(_chessboard.GetCellByFigure(FigureType.Pawn, figureColor),figureColor);
+        //todo: надо разобраться с эвентами и убрать отсюда форму вообще, обновлять состояние иконок только той фигуры которая ходила
         foreach (var (_, cell) in _buttonCells)
         {
             if (cell.GetCell().HasFigure())
@@ -95,12 +101,11 @@ public class GameEngine
 
             cell.ResetColorToDefault();
         }
-
-        _colorService.ToogleColor();
-        if (!_validationMovedService.DetectNotCheckMate(_chessboard, _colorService.GetCurrentColor()))
+        _stateService.ToogleColor();
+        if (!_validationMovedService.DetectNotCheckMate(_chessboard, _stateService.GetCurrentColor()))
         {
             MessageBox.Show(
-                $"{_colorService.GetOtherColor()} победили! Шах и мат.",
+                $"{_stateService.GetOtherColor()} победили! Шах и мат.",
                 "Игра окончена",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
@@ -111,10 +116,10 @@ public class GameEngine
 
     public void HandleClick(ButtonCell btnCell)
     {
-        if (!_validationMovedService.DetectNotCheckMate(_chessboard, _colorService.GetCurrentColor()))
+        if (!_validationMovedService.DetectNotCheckMate(_chessboard, _stateService.GetCurrentColor()))
         {
             MessageBox.Show(
-                $"{_colorService.GetOtherColor()} победили! Шах и мат.",
+                $"{_stateService.GetOtherColor()} победили! Шах и мат.",
                 "Игра окончена",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
@@ -123,7 +128,7 @@ public class GameEngine
         }
 
         if (btnCell.GetCell().HasFigure() &&
-            btnCell.GetCell().Figure!.Color == _colorService.GetCurrentColor())
+            btnCell.GetCell().Figure!.Color == _stateService.GetCurrentColor())
         {
             HandleClickFigure(btnCell);
         }

@@ -102,4 +102,9 @@ public class Rook : BaseFigure
     {
         return new Rook(Color, Position);
     }
+    
+    public override FigureType GetTypeFigure()
+    {
+        return FigureType.Rook;
+    }
 }

@@ -97,4 +97,9 @@ public class King : BaseFigure
     {
         return new King(Color, Position);
     }
+    
+    public override FigureType GetTypeFigure()
+    {
+        return FigureType.King;
+    }
 }

@@ -157,4 +157,9 @@ public class Queen : BaseFigure
     {
         return new Queen(Color, Position);
     }
+    
+    public override FigureType GetTypeFigure()
+    {
+        return FigureType.Queen;
+    }
 }

@@ -66,4 +66,9 @@ public class Pawn : BaseFigure
     {
         return new Pawn(Color, Position);
     }
+    
+    public override FigureType GetTypeFigure()
+    {
+        return FigureType.Pawn;
+    }
 }

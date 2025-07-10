@@ -1,35 +1,34 @@
 using WinFormsApp1.Entities.Figures;
 using WinFormsApp1.Enums;
-using WinFormsApp1.Interfaces;
 
 namespace WinFormsApp1.Factories;
 
 public class IconFigureFactory
 {
-    private static readonly Dictionary<FigureColor, Dictionary<Type, string>> MAP = new()
+    private static readonly Dictionary<FigureColor, Dictionary<FigureType, string>> MAP = new()
     {
         {
             FigureColor.Black,
-            new Dictionary<Type, string>()
+            new Dictionary<FigureType, string>()
             {
-                { typeof(King), "\u265A" },
-                { typeof(Queen), "\u265B" },
-                { typeof(Rook), "\u265C" },
-                { typeof(Bishop), "\u265D" },
-                { typeof(Knight), "\u265E" },
-                { typeof(Pawn), "\u265F" }
+                { FigureType.King, "\u265A" },
+                { FigureType.Queen, "\u265B" },
+                { FigureType.Rook, "\u265C" },
+                { FigureType.Bishop, "\u265D" },
+                { FigureType.Knight, "\u265E" },
+                { FigureType.Pawn, "\u265F" }
             }
         },
         {
             FigureColor.White,
-            new Dictionary<Type, string>()
+            new Dictionary<FigureType, string>()
             {
-                { typeof(King), "\u2654" },
-                { typeof(Queen), "\u2655" },
-                { typeof(Rook), "\u2656" },
-                { typeof(Bishop), "\u2657" },
-                { typeof(Knight), "\u2658" },
-                { typeof(Pawn), "\u2659" }
+                { FigureType.King, "\u2654" },
+                { FigureType.Queen, "\u2655" },
+                { FigureType.Rook, "\u2656" },
+                { FigureType.Bishop, "\u2657" },
+                { FigureType.Knight, "\u2658" },
+                { FigureType.Pawn, "\u2659" }
             }
         }
     };
@@ -38,6 +37,6 @@ public class IconFigureFactory
     public static string Create(BaseFigure figure)
     {
         //todo: add handler exception? 
-        return MAP[figure.Color][figure.GetType()];
+        return MAP[figure.Color][figure.GetTypeFigure()];
     }
 }

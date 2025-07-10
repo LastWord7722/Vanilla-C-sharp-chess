@@ -91,4 +91,9 @@ public class Knight : BaseFigure
     {
         return new Knight(Color, Position);
     }
+    
+    public override FigureType GetTypeFigure()
+    {
+        return FigureType.Knight;
+    }
 }

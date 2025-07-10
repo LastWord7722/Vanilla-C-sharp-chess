@@ -45,12 +45,15 @@ public class Chessboard
 
     public bool HasEnemyFigureByPosition(Position position, FigureColor enemyFigureColor) =>
         HasFigureByPosition(position) && GetCellByPosition(position).Figure!.Color == enemyFigureColor;
-
+    public List<Cell> GetCellByFigure(FigureType type, FigureColor figureColor) =>
+        Cells.Where(kv => kv.Value.HasFigure() && kv.Value.Figure!.GetTypeFigure() == type && kv.Value.Figure.Color == figureColor)
+            .Select(kw => kw.Value)
+            .ToList();
+        
     public BaseFigure GetKingByColor(FigureColor figureColor)
     {
-        return Cells
-            .First(kv => kv.Value.HasFigure() && kv.Value.Figure!.Color == figureColor &&
-                         kv.Value.Figure!.GetType().Name == "King")!.Value.Figure!;
+        return Cells.First(kv => kv.Value.HasFigure() && kv.Value.Figure!.Color == figureColor &&
+                                 kv.Value.Figure!.GetTypeFigure() == FigureType.King)!.Value.Figure!;
     }
 
     public char[] GetListColumns()

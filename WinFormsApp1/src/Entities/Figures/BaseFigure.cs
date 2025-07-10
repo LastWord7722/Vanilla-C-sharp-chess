@@ -48,4 +48,5 @@ public abstract class BaseFigure
 
     public abstract List<Position> GetAvailableMoves(Chessboard.Chessboard chessboard);
     public abstract BaseFigure Clone();
+    public abstract FigureType GetTypeFigure();
 }

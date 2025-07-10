@@ -66,4 +66,9 @@ public class Bishop : BaseFigure
     {
         return new Bishop(Color, Position);
     }
+
+    public override FigureType GetTypeFigure()
+    {
+        return FigureType.Bishop;
+    }
 }

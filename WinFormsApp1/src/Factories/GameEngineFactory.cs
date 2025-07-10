@@ -14,7 +14,7 @@ public class GameEngineFactory
         IMovedService movedService = new MovedService();
         return new GameEngine(
             movedService,
-            new ColorService(),
+            new StateService(),
             new ValidationMovedService(movedService),
             chessboard,
             buttonCells
