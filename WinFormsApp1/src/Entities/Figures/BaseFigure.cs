@@ -14,6 +14,13 @@ public abstract class BaseFigure
         Color = color;
     }
 
+    public void SetFigureMove()
+    {
+        IsFigureNotMoved = false;
+    }
+
+    public bool IsFigureNotMoved { get; set; } = true;
+
     //todo: методы получения позиции от текущей позиции стоит пересмотреть
     //т.к. зависимость цвета есть только у пешки, для остольных цвет не важен
     // для всех остольных возможность хода не зависит от цвета
@@ -31,14 +38,14 @@ public abstract class BaseFigure
 
     protected FigureColor GetEnemyColor() => Color == FigureColor.White ? FigureColor.Black : FigureColor.White;
 
-    protected char? GetLeftColumn(char currentColumn, char[] columns)
+    public char? GetLeftColumn(char currentColumn, char[] columns)
     {
         int indexCurrentColumn = Array.IndexOf(columns, currentColumn);
         int leftColumnIndex = Color == FigureColor.White ? indexCurrentColumn + 1 : indexCurrentColumn - 1;
         return leftColumnIndex < 0 || leftColumnIndex >= columns.Length ? null : columns[leftColumnIndex];
     }
 
-    protected char? GetRightColumn(char currentColumn, char[] columns)
+    public char? GetRightColumn(char currentColumn, char[] columns)
     {
         int indexCurrentColumn = Array.IndexOf(columns, currentColumn);
         int rightColumnIndex = Color == FigureColor.White ? indexCurrentColumn - 1 : indexCurrentColumn + 1;

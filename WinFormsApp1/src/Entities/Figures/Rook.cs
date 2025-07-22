@@ -8,7 +8,6 @@ public class Rook : BaseFigure
     public Rook(FigureColor color, Position position) : base(color, position)
     {
     }
-
     private List<Position> GetAvailableMovesVertical(Chessboard.Chessboard chessboard, bool isLeft = true)
     {
         char[] columnList = chessboard.GetListColumns();
@@ -97,12 +96,12 @@ public class Rook : BaseFigure
 
         return moves;
     }
-    
+
     public override BaseFigure Clone()
     {
         return new Rook(Color, Position);
     }
-    
+
     public override FigureType GetTypeFigure()
     {
         return FigureType.Rook;

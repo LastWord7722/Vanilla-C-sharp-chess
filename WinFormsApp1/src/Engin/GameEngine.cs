@@ -80,9 +80,16 @@ public class GameEngine
             return;
         }
 
-        _movedService.MoveFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell());
+        if (btnMoveTo.GetCell().HasFigure() && btnMoveTo.GetCell().Figure.GetTypeFigure() == FigureType.King)
+        {
+            
+        }
+        else
+        {
+            _movedService.MoveFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell());
+        }
+        
         _selectedBtnFigure = null;
-
 
         FigureColor figureColor = _stateService.GetCurrentColor();
         //todo: можно проврять не всех а только ту пешку которая ходила, я думаю это норм оптимизация
@@ -102,6 +109,7 @@ public class GameEngine
             cell.ResetColorToDefault();
         }
         _stateService.ToogleColor();
+
         if (!_validationMovedService.DetectNotCheckMate(_chessboard, _stateService.GetCurrentColor()))
         {
             MessageBox.Show(

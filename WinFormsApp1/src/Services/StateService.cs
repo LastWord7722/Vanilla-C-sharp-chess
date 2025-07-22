@@ -18,7 +18,7 @@ public class StateService : IStateService
     {
         return _figureColor;
     }
-    
+
     public FigureColor GetOtherColor()
     {
         return _figureColor == FigureColor.White ? FigureColor.Black : FigureColor.White;
@@ -29,10 +29,12 @@ public class StateService : IStateService
         int needPosition = color == FigureColor.Black ? 1 : 8;
         foreach (var cell in cells)
         {
-            if (cell.HasFigure() && cell.Figure!.GetTypeFigure() == FigureType.Pawn && cell.Position.GetRow() == needPosition)
+            if (cell.HasFigure() && cell.Figure!.GetTypeFigure() == FigureType.Pawn &&
+                cell.Position.GetRow() == needPosition)
             {
                 cell.Figure = new Queen(color, cell.Position);
             }
         }
     }
+
 }

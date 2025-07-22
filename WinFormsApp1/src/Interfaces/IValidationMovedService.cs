@@ -9,5 +9,7 @@ public interface IValidationMovedService
 {
     public bool DetectNotCheckMate(Chessboard chessboard, FigureColor checkedColor);
     public bool DetectCheck(Chessboard chessboard, FigureColor checkedColor);
-    public List<Position> GetRealAvailableMoves(BaseFigure figure, Chessboard chessboard);
+    public List<Position> GetRealAvailableMoves(BaseFigure figure, Chessboard chessboard, bool useCastling = true);
+
+    public bool[] CheckCastling(Chessboard chessboard, FigureColor color);
 }

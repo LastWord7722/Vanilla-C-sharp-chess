@@ -12,6 +12,7 @@ public class MovedService : IMovedService
     {
         currentCell.Figure!.Position = toMovCell.Position;
         toMovCell.Figure = currentCell.Figure!;
+        toMovCell.Figure.SetFigureMove();
         currentCell.Figure = null;
     }
 }

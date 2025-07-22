@@ -9,17 +9,19 @@ namespace WinFormsApp1.Services;
 public class ValidationMovedService : IValidationMovedService
 {
     private IMovedService _movedService;
+
     public ValidationMovedService(IMovedService movedService)
     {
         _movedService = movedService;
     }
-    public List<Position> GetRealAvailableMoves(BaseFigure figure, Chessboard chessboard)
+
+    public List<Position> GetRealAvailableMoves(BaseFigure figure, Chessboard chessboard, bool useCastling = true)
     {
         List<Position> availableMoves = new List<Position>();
         //todo: есть баг если chessboardClone юзать до цыкла то есть ошибочные ходы, нужно перепроверить возврат на исходные позиции
         foreach (var pos in figure.GetAvailableMoves(chessboard))
         {
-            Chessboard chessboardClone = chessboard.DeppClone(); 
+            Chessboard chessboardClone = chessboard.DeppClone();
             Position oldPosFigure = figure.Position;
             _movedService.MoveFigure(
                 chessboardClone.GetCellByPosition(pos),
@@ -34,10 +36,45 @@ public class ValidationMovedService : IValidationMovedService
             //     chessboardClone.GetCellByPosition(pos)
             // );
             // chessboardClone.GetCellByPosition(oldPosFigure).SetFigure(figure);
-            
+
             if (!haveCheck)
             {
                 availableMoves.Add(pos);
+            }
+        }
+
+        if (figure.GetTypeFigure() == FigureType.King && useCastling)
+        {
+            King king = figure as King;
+            bool[] res = CheckCastling(chessboard, figure.Color);
+            Position?[] casstlingMove = king.GetCasstlingMove(chessboard); 
+       
+            if (res[0] && casstlingMove[0].HasValue)
+            {
+                Chessboard chessboardClone = chessboard.DeppClone();
+                _movedService.MoveFigure(
+                    chessboardClone.GetCellByPosition(casstlingMove[0].Value),
+                    chessboardClone.GetCellByPosition(king.Position)
+                );
+                bool haveCheck = DetectCheck(chessboardClone, figure.Color);
+                if (!haveCheck)
+                {
+                    availableMoves.Add(casstlingMove[0].Value);
+                }
+            }
+            if (res[1] && casstlingMove[1].HasValue)
+            {
+                Chessboard chessboardClone = chessboard.DeppClone();
+                _movedService.MoveFigure(
+                    chessboardClone.GetCellByPosition(casstlingMove[1].Value),
+                    chessboardClone.GetCellByPosition(king.Position)
+                );
+                bool haveCheck = DetectCheck(chessboardClone, figure.Color);
+                if (!haveCheck)
+                {
+                    availableMoves.Add(casstlingMove[1].Value);
+                }
+           
             }
         }
         return availableMoves;
@@ -52,8 +89,8 @@ public class ValidationMovedService : IValidationMovedService
 
         foreach (var cell in filteredCells)
         {
-            isNotCheckMate = GetRealAvailableMoves(cell.Value.Figure!,chessboard).Count > 0;
-            
+            isNotCheckMate = GetRealAvailableMoves(cell.Value.Figure!, chessboard).Count > 0;
+
             if (isNotCheckMate)
             {
                 var figure = cell.Value.Figure!;
@@ -65,12 +102,12 @@ public class ValidationMovedService : IValidationMovedService
 
         return isNotCheckMate;
     }
-    
+
     public bool DetectCheck(Chessboard chessboard, FigureColor checkedColor)
     {
         bool flag = false;
         var enemyKing = chessboard.GetKingByColor(checkedColor);
-        
+
         var filteredCells = chessboard.Cells
             .Where(kv => kv.Value.HasFigure() && kv.Value.Figure!.Color != checkedColor)
             .ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -89,5 +126,63 @@ public class ValidationMovedService : IValidationMovedService
         }
 
         return flag;
+    }
+
+
+    public bool[] CheckCastling(Chessboard chessboard, FigureColor color)
+    {
+        bool[] result = [true, true];
+        List<Cell> cells = chessboard.Cells.Select(kv => kv.Value).ToList();
+
+        King kingFigure = chessboard.GetKingByColor(color) as King;
+
+        List<Rook> rooksFigure = cells.Where(cell =>
+                cell.HasFigure() && cell!.Figure.Color == color && cell.Figure!.GetTypeFigure() == FigureType.Rook)
+            .Select(cell => cell.Figure as Rook)
+            .OrderBy(cell => cell!.Position.GetColumn())
+            .ToList();
+
+        if (kingFigure != null && !kingFigure.IsFigureNotMoved || DetectCheck(chessboard, color))
+        {
+            return [false, false];
+        }
+        
+        if (!rooksFigure[0].IsFigureNotMoved)
+        {
+            result[0] = false;
+        }
+        
+        if (!rooksFigure[1].IsFigureNotMoved)
+        {
+            result[1] = false;
+        }
+
+        result = kingFigure.GetCasstlingMove(chessboard)
+            .Select(value => value.HasValue)
+            .ToArray();
+  
+        Console.WriteLine(string.Join(", ", result));
+        
+        List<BaseFigure> enymyFigure = cells.Where(cell => cell.HasFigure() && cell.Figure.Color != color)
+            .Select(cell => cell.Figure)
+            .ToList();
+
+        foreach (var figure in enymyFigure)
+        {
+            List<Position> moves = figure.GetAvailableMoves(chessboard);
+            foreach (var move in moves)
+            {
+                if (kingFigure.GetNextColumns(chessboard, true, 3).Any(pos => pos == move))
+                {
+                    result[0] = false;
+                }
+                if (kingFigure.GetNextColumns(chessboard, false, 2).Any(pos => pos == move))
+                {
+                    result[1] = false;
+                }
+            }
+        }
+        
+        return result;
     }
 }
