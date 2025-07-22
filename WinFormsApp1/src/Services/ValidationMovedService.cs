@@ -15,7 +15,7 @@ public class ValidationMovedService : IValidationMovedService
         _movedService = movedService;
     }
 
-    public List<Position> GetRealAvailableMoves(BaseFigure figure, Chessboard chessboard, bool useCastling = true)
+    public List<Position> GetRealAvailableMoves(BaseFigure figure, Chessboard chessboard)
     {
         List<Position> availableMoves = new List<Position>();
         //todo: есть баг если chessboardClone юзать до цыкла то есть ошибочные ходы, нужно перепроверить возврат на исходные позиции
@@ -43,12 +43,12 @@ public class ValidationMovedService : IValidationMovedService
             }
         }
 
-        if (figure.GetTypeFigure() == FigureType.King && useCastling)
+        if (figure.GetTypeFigure() == FigureType.King)
         {
             King king = figure as King;
             bool[] res = CheckCastling(chessboard, figure.Color);
             Position?[] casstlingMove = king.GetCasstlingMove(chessboard); 
-       
+            //todo: use loop
             if (res[0] && casstlingMove[0].HasValue)
             {
                 Chessboard chessboardClone = chessboard.DeppClone();
@@ -147,6 +147,10 @@ public class ValidationMovedService : IValidationMovedService
             return [false, false];
         }
         
+        result = kingFigure.GetCasstlingMove(chessboard)
+            .Select(value => value.HasValue)
+            .ToArray();
+        
         if (!rooksFigure[0].IsFigureNotMoved)
         {
             result[0] = false;
@@ -156,29 +160,27 @@ public class ValidationMovedService : IValidationMovedService
         {
             result[1] = false;
         }
-
-        result = kingFigure.GetCasstlingMove(chessboard)
-            .Select(value => value.HasValue)
-            .ToArray();
-  
-        Console.WriteLine(string.Join(", ", result));
         
         List<BaseFigure> enymyFigure = cells.Where(cell => cell.HasFigure() && cell.Figure.Color != color)
             .Select(cell => cell.Figure)
             .ToList();
 
-        foreach (var figure in enymyFigure)
+        List<Position>[] positions =
+        [
+            kingFigure.GetNextColumns(chessboard, true, 3),
+            kingFigure.GetNextColumns(chessboard, false, 2)
+        ];
+   
+        foreach (BaseFigure figure in enymyFigure)
         {
-            List<Position> moves = figure.GetAvailableMoves(chessboard);
-            foreach (var move in moves)
+            foreach (Position move in figure.GetAvailableMoves(chessboard))
             {
-                if (kingFigure.GetNextColumns(chessboard, true, 3).Any(pos => pos == move))
+                for (int i = 0; i < positions.Length; i++)
                 {
-                    result[0] = false;
-                }
-                if (kingFigure.GetNextColumns(chessboard, false, 2).Any(pos => pos == move))
-                {
-                    result[1] = false;
+                    if (positions[i].Any(pos => pos == move))
+                    {
+                        result[i] = false;
+                    }
                 }
             }
         }
