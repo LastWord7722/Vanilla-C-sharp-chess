@@ -38,14 +38,14 @@ public abstract class BaseFigure
 
     protected FigureColor GetEnemyColor() => Color == FigureColor.White ? FigureColor.Black : FigureColor.White;
 
-    public char? GetLeftColumn(char currentColumn, char[] columns)
+    public char? GetRightColumn(char currentColumn, char[] columns)
     {
         int indexCurrentColumn = Array.IndexOf(columns, currentColumn);
         int leftColumnIndex = Color == FigureColor.White ? indexCurrentColumn + 1 : indexCurrentColumn - 1;
         return leftColumnIndex < 0 || leftColumnIndex >= columns.Length ? null : columns[leftColumnIndex];
     }
-
-    public char? GetRightColumn(char currentColumn, char[] columns)
+    
+    public char? GetLeftColumn(char currentColumn, char[] columns)
     {
         int indexCurrentColumn = Array.IndexOf(columns, currentColumn);
         int rightColumnIndex = Color == FigureColor.White ? indexCurrentColumn - 1 : indexCurrentColumn + 1;

@@ -114,7 +114,7 @@ public class King : BaseFigure
             
             if (!next.HasValue)
             {
-                throw new ArgumentException("next column must have a value");
+                break;
             }
             positions.Add(Position.Make(next.Value, Position.GetRow()));
         }
@@ -124,9 +124,9 @@ public class King : BaseFigure
     public Position?[] GetCasstlingMove(Chessboard.Chessboard chessboard)
     {
         Position?[] result = [null, null];
-        //todo bug in GetNextColumns
-        var left = GetNextColumns(chessboard, false, 3);
-        var right = GetNextColumns(chessboard, true, 2);
+
+        var left = GetNextColumns(chessboard, true, 3);
+        var right = GetNextColumns(chessboard, false, 2);
 
         if (left.All(pos => !chessboard.HasFigureByPosition(pos)))
         {
@@ -140,6 +140,7 @@ public class King : BaseFigure
         
         return result;
     }
+    
     public override BaseFigure Clone()
     {
         return new King(Color, Position);

@@ -53,8 +53,6 @@ public class GameEngine
         _selectedBtnFigure = btnCell;
         List<Position> availableMoves =
             _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, _chessboard);
-        // на клоне доски будем делать каждый возможный ход и если ход возмжный будет красить кнопки, скорее всего\
-        // состояние будет у сервиса...
         foreach (var move in availableMoves)
         {
             _buttonCells[move].SetBackGroundColor(ColorHelper.GetMoveColor());
@@ -80,9 +78,9 @@ public class GameEngine
             return;
         }
 
-        if (btnMoveTo.GetCell().HasFigure() && btnMoveTo.GetCell().Figure.GetTypeFigure() == FigureType.King)
+        if (_selectedBtnFigure.GetCell().Figure!.GetTypeFigure() == FigureType.King)
         {
-            
+            _movedService.MoveKingFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell(), _chessboard);
         }
         else
         {
