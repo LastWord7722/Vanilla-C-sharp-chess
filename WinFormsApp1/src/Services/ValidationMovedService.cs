@@ -47,34 +47,23 @@ public class ValidationMovedService : IValidationMovedService
         {
             King king = figure as King;
             bool[] res = CheckCastling(chessboard, figure.Color);
-            Position?[] casstlingMove = king.GetCasstlingMove(chessboard); 
-            //todo: use loop
-            if (res[0] && casstlingMove[0].HasValue)
+            Position?[] casstlingMove = king!.GetCasstlingMove(chessboard); 
+ 
+            for (int i = 0; i <= res.Length; i++)
             {
+                if (!casstlingMove[i].HasValue || !res[i])
+                {
+                    continue;
+                }
                 Chessboard chessboardClone = chessboard.DeppClone();
                 _movedService.MoveFigure(
-                    chessboardClone.GetCellByPosition(casstlingMove[0].Value),
+                    chessboardClone.GetCellByPosition(casstlingMove[i]!.Value),
                     chessboardClone.GetCellByPosition(king.Position)
                 );
-                bool haveCheck = DetectCheck(chessboardClone, figure.Color);
-                if (!haveCheck)
+                if (!DetectCheck(chessboardClone, figure.Color))
                 {
-                    availableMoves.Add(casstlingMove[0].Value);
+                    availableMoves.Add(casstlingMove[i]!.Value);
                 }
-            }
-            if (res[1] && casstlingMove[1].HasValue)
-            {
-                Chessboard chessboardClone = chessboard.DeppClone();
-                _movedService.MoveFigure(
-                    chessboardClone.GetCellByPosition(casstlingMove[1].Value),
-                    chessboardClone.GetCellByPosition(king.Position)
-                );
-                bool haveCheck = DetectCheck(chessboardClone, figure.Color);
-                if (!haveCheck)
-                {
-                    availableMoves.Add(casstlingMove[1].Value);
-                }
-           
             }
         }
         return availableMoves;
