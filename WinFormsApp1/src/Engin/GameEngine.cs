@@ -17,6 +17,7 @@ public class GameEngine
     private Chessboard _chessboard;
     private ButtonCell? _selectedBtnFigure;
     private Dictionary<Position, ButtonCell> _buttonCells;
+    private List<Position> _currentPossibleMoves = new();
 
 
     public GameEngine(
@@ -33,27 +34,20 @@ public class GameEngine
         _chessboard = chessboard;
         _buttonCells = buttonCells;
     }
-
-    public GameEngine SetSelectedBtnFigure(ButtonCell? selectedBtnFigure)
-    {
-        _selectedBtnFigure = selectedBtnFigure;
-        return this;
-    }
-
+    
     private void HandleClickFigure(ButtonCell btnCell)
     {
-        if (_selectedBtnFigure != null)
+        if (_currentPossibleMoves.Count > 0)
         {
-            foreach (var move in _selectedBtnFigure.GetCell().Figure!.GetAvailableMoves(_chessboard))
+            foreach (var move in _currentPossibleMoves)
             {
                 _buttonCells[move].ResetColorToDefault();
             }
         }
 
         _selectedBtnFigure = btnCell;
-        List<Position> availableMoves =
-            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, _chessboard);
-        foreach (var move in availableMoves)
+        _currentPossibleMoves = _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, _chessboard);
+        foreach (var move in _currentPossibleMoves)
         {
             _buttonCells[move].SetBackGroundColor(ColorHelper.GetMoveColor());
         }
@@ -66,19 +60,12 @@ public class GameEngine
 
     private void HandleMoveFigure(ButtonCell btnMoveTo)
     {
-        if (SelectedBtnIsNull())
+        if (SelectedBtnIsNull() || !_currentPossibleMoves.Contains(btnMoveTo.GetCell().Position))
         {
             return;
         }
-
-        List<Position> availableMoves = 
-            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure!.GetCell().Figure!, _chessboard);
-        if (!availableMoves.Contains(btnMoveTo.GetCell().Position))
-        {
-            return;
-        }
-
-        if (_selectedBtnFigure.GetCell().Figure!.GetTypeFigure() == FigureType.King)
+        
+        if (_selectedBtnFigure!.GetCell().Figure!.GetTypeFigure() == FigureType.King)
         {
             _movedService.MoveKingFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell(), _chessboard);
         }
@@ -106,6 +93,7 @@ public class GameEngine
 
             cell.ResetColorToDefault();
         }
+        _currentPossibleMoves.Clear();
         _stateService.ToogleColor();
 
         if (!_validationMovedService.DetectNotCheckMate(_chessboard, _stateService.GetCurrentColor()))
