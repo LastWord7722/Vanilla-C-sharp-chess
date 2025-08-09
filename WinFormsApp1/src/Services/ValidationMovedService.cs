@@ -86,9 +86,6 @@ public class ValidationMovedService : IValidationMovedService
 
             if (isNotCheckMate)
             {
-                var figure = cell.Value.Figure!;
-                Console.WriteLine($"{figure.Color}, {figure.GetType().Name}, {cell.Value.Position.GetPositionCode()}");
-
                 break;
             }
         }

@@ -17,7 +17,7 @@ public class GameEngine : IGameEngine
     private ButtonCell? _selectedBtnFigure;
     private List<Position> _currentPossibleMoves = new();
     public Dictionary<Position, ButtonCell> ButtonCells { private get; set; } = new();
-    public Chessboard? Chessboard {private get; set; }
+    public Chessboard? Chessboard { private get; set; }
 
 
     public GameEngine(
@@ -30,7 +30,7 @@ public class GameEngine : IGameEngine
         _validationMovedService = validationMovedService;
         _stateService = colorService;
     }
-    
+
     private void HandleClickFigure(ButtonCell btnCell)
     {
         if (_currentPossibleMoves.Count > 0)
@@ -42,7 +42,8 @@ public class GameEngine : IGameEngine
         }
 
         _selectedBtnFigure = btnCell;
-        _currentPossibleMoves = _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, Chessboard);
+        _currentPossibleMoves =
+            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, Chessboard);
         foreach (var move in _currentPossibleMoves)
         {
             ButtonCells[move].SetBackGroundColor(ColorHelper.GetMoveColor());
@@ -60,21 +61,26 @@ public class GameEngine : IGameEngine
         {
             return;
         }
+
+        Cell fromMove = _selectedBtnFigure!.GetCell();
+        Cell toMove = btnMoveTo.GetCell();
+        _stateService.SetHistoryMoves(_selectedBtnFigure!.GetCell().Figure!, fromMove.Position, toMove.Position);
         
         if (_selectedBtnFigure!.GetCell().Figure!.GetTypeFigure() == FigureType.King)
         {
-            _movedService.MoveKingFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell(), Chessboard);
+            _movedService.MoveKingFigure(toMove, fromMove, Chessboard!);
         }
         else
         {
-            _movedService.MoveFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell());
+            _movedService.MoveFigure(toMove, fromMove);
         }
         
+        Console.WriteLine(string.Join(';', _stateService.HistoryMoves.Select(item => item.GetCode()).ToArray()));
         _selectedBtnFigure = null;
 
         FigureColor figureColor = _stateService.GetCurrentColor();
         //todo: можно проврять не всех а только ту пешку которая ходила, я думаю это норм оптимизация
-        _stateService.CheckAndPromotePawns(Chessboard.GetCellByFigure(FigureType.Pawn, figureColor),figureColor);
+        _stateService.CheckAndPromotePawns(Chessboard!.GetCellByFigure(FigureType.Pawn, figureColor), figureColor);
         //todo: надо разобраться с эвентами и убрать отсюда форму вообще, обновлять состояние иконок только той фигуры которая ходила
         foreach (var (_, cell) in ButtonCells)
         {
@@ -89,6 +95,7 @@ public class GameEngine : IGameEngine
 
             cell.ResetColorToDefault();
         }
+
         _currentPossibleMoves.Clear();
         _stateService.ToogleColor();
 
@@ -110,7 +117,7 @@ public class GameEngine : IGameEngine
         {
             throw new NullReferenceException("Chessboard is null or empty ButtonCells");
         }
-        
+
         if (!_validationMovedService.DetectNotCheckMate(Chessboard, _stateService.GetCurrentColor()))
         {
             MessageBox.Show(
