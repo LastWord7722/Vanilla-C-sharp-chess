@@ -8,31 +8,27 @@ using WinFormsApp1.ValueObjects;
 
 namespace WinFormsApp1.Engin;
 
-public class GameEngine
+public class GameEngine : IGameEngine
 {
     //todo: нужно подумать как вынести ui из логики Dictionary<Position, ButtonCell> _buttonCells
     private IMovedService _movedService;
     private IValidationMovedService _validationMovedService;
     private IStateService _stateService;
-    private Chessboard _chessboard;
     private ButtonCell? _selectedBtnFigure;
-    private Dictionary<Position, ButtonCell> _buttonCells;
     private List<Position> _currentPossibleMoves = new();
+    public Dictionary<Position, ButtonCell> ButtonCells { private get; set; } = new();
+    public Chessboard? Chessboard {private get; set; }
 
 
     public GameEngine(
         IMovedService movedService,
         IStateService colorService,
-        IValidationMovedService validationMovedService,
-        Chessboard chessboard,
-        Dictionary<Position, ButtonCell> buttonCells
+        IValidationMovedService validationMovedService
     )
     {
         _movedService = movedService;
         _validationMovedService = validationMovedService;
         _stateService = colorService;
-        _chessboard = chessboard;
-        _buttonCells = buttonCells;
     }
     
     private void HandleClickFigure(ButtonCell btnCell)
@@ -41,15 +37,15 @@ public class GameEngine
         {
             foreach (var move in _currentPossibleMoves)
             {
-                _buttonCells[move].ResetColorToDefault();
+                ButtonCells[move].ResetColorToDefault();
             }
         }
 
         _selectedBtnFigure = btnCell;
-        _currentPossibleMoves = _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, _chessboard);
+        _currentPossibleMoves = _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, Chessboard);
         foreach (var move in _currentPossibleMoves)
         {
-            _buttonCells[move].SetBackGroundColor(ColorHelper.GetMoveColor());
+            ButtonCells[move].SetBackGroundColor(ColorHelper.GetMoveColor());
         }
     }
 
@@ -67,7 +63,7 @@ public class GameEngine
         
         if (_selectedBtnFigure!.GetCell().Figure!.GetTypeFigure() == FigureType.King)
         {
-            _movedService.MoveKingFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell(), _chessboard);
+            _movedService.MoveKingFigure(btnMoveTo.GetCell(), _selectedBtnFigure.GetCell(), Chessboard);
         }
         else
         {
@@ -78,9 +74,9 @@ public class GameEngine
 
         FigureColor figureColor = _stateService.GetCurrentColor();
         //todo: можно проврять не всех а только ту пешку которая ходила, я думаю это норм оптимизация
-        _stateService.CheckAndPromotePawns(_chessboard.GetCellByFigure(FigureType.Pawn, figureColor),figureColor);
+        _stateService.CheckAndPromotePawns(Chessboard.GetCellByFigure(FigureType.Pawn, figureColor),figureColor);
         //todo: надо разобраться с эвентами и убрать отсюда форму вообще, обновлять состояние иконок только той фигуры которая ходила
-        foreach (var (_, cell) in _buttonCells)
+        foreach (var (_, cell) in ButtonCells)
         {
             if (cell.GetCell().HasFigure())
             {
@@ -96,7 +92,7 @@ public class GameEngine
         _currentPossibleMoves.Clear();
         _stateService.ToogleColor();
 
-        if (!_validationMovedService.DetectNotCheckMate(_chessboard, _stateService.GetCurrentColor()))
+        if (!_validationMovedService.DetectNotCheckMate(Chessboard, _stateService.GetCurrentColor()))
         {
             MessageBox.Show(
                 $"{_stateService.GetOtherColor()} победили! Шах и мат.",
@@ -110,7 +106,12 @@ public class GameEngine
 
     public void HandleClick(ButtonCell btnCell)
     {
-        if (!_validationMovedService.DetectNotCheckMate(_chessboard, _stateService.GetCurrentColor()))
+        if (Chessboard == null || ButtonCells.Count <= 0)
+        {
+            throw new NullReferenceException("Chessboard is null or empty ButtonCells");
+        }
+        
+        if (!_validationMovedService.DetectNotCheckMate(Chessboard, _stateService.GetCurrentColor()))
         {
             MessageBox.Show(
                 $"{_stateService.GetOtherColor()} победили! Шах и мат.",

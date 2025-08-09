@@ -5,13 +5,14 @@ using WinFormsApp1.Enums;
 using WinFormsApp1.Factories;
 using WinFormsApp1.FormLayout;
 using WinFormsApp1.Helpers;
+using WinFormsApp1.Interfaces;
 using WinFormsApp1.ValueObjects;
 
 namespace WinFormsApp1;
 
 partial class Form1
 {
-    GameEngine? _gameEngine = null;
+    IGameEngine? _gameEngine = null;
     /// <summary>
     ///  Required designer variable.
     /// </summary>
