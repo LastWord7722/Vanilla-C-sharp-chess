@@ -64,7 +64,7 @@ public class GameEngine : IGameEngine
 
         Cell fromMove = _selectedBtnFigure!.GetCell();
         Cell toMove = btnMoveTo.GetCell();
-        _stateService.SetHistoryMoves(_selectedBtnFigure!.GetCell().Figure!, fromMove.Position, toMove.Position);
+        _stateService.SetHistoryMoves(fromMove, toMove);
         
         if (_selectedBtnFigure!.GetCell().Figure!.GetTypeFigure() == FigureType.King)
         {
@@ -76,6 +76,7 @@ public class GameEngine : IGameEngine
         }
         
         Console.WriteLine(string.Join(';', _stateService.HistoryMoves.Select(item => item.GetCode()).ToArray()));
+        Console.WriteLine("----");
         _selectedBtnFigure = null;
 
         FigureColor figureColor = _stateService.GetCurrentColor();

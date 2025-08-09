@@ -40,9 +40,9 @@ public class StateService : IStateService
         }
     }
 
-    public void SetHistoryMoves(BaseFigure figure, Position from, Position to)
+    public void SetHistoryMoves(Cell cellFrom, Cell cellTo)
     {
-        HistoryMoves.Add(new HistoryMoveItem(figure, from, to));
+        HistoryMoves.Add(new HistoryMoveItem(cellFrom.Figure!, cellFrom.Position, cellTo.Position, cellTo.Figure));
     }
-    
+
 }

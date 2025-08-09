@@ -9,5 +9,5 @@ public interface IStateService : IColorService
 {
     public List<HistoryMoveItem> HistoryMoves { get; }
     public void CheckAndPromotePawns(List<Cell> cells, FigureColor color);
-    public void SetHistoryMoves(BaseFigure figure, Position from, Position to);
+    public void SetHistoryMoves(Cell cellFrom, Cell cellTo);
 }
