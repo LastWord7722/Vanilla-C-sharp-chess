@@ -14,7 +14,10 @@ public class MoveList
     public void AddCastling(King king, Position fromKing, Position toKing, Rook rook, Position fromRook,
         Position toRook)
         => _items.Add(new HistoryMoveItem(king, fromKing, toKing, new HistoryCastingMoveItem(rook, fromRook, toRook)));
-
+    public int CountMoveFigures(BaseFigure figure)
+    {
+        return _items.Count(v => v.Figure == figure);
+    }
     public override string ToString()
         => string.Join(';', _items.Select(m => m.GetCode()));
 

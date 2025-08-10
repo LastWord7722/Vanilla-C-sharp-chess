@@ -14,44 +14,46 @@ public class MovedService : IMovedService
         {
             throw new Exception("fromCell not a figure");
         }
-        
+
         fromCell.Figure!.Position = toCell.Position;
         toCell.Figure = fromCell.Figure!;
         toCell.Figure.IsFigureNotMoved = false;
         fromCell.Figure = null;
     }
 
-    public void MoveKingFigure(Cell toCell, Cell fromCell, Chessboard chessboard,IStateService stateService)
+    public void MoveKingFigure(Cell toCell, Cell fromCell, Chessboard chessboard, IStateService stateService)
     {
         if (!fromCell.HasFigure() || fromCell.Figure.GetTypeFigure() != FigureType.King)
         {
             throw new Exception("Figure is null or figure type not king");
         }
-        
+
         King king = fromCell!.Figure as King;
         Position?[] castingMove = king.GetCasstlingMove(chessboard);
         char kingStartColumn = king.Position.GetColumn();
 
-        MoveFigure(toCell, fromCell);
         if (!castingMove.Contains(toCell.Position))
         {
             stateService.AddHistoryMove(fromCell, toCell);
+            MoveFigure(toCell, fromCell);
         }
         else
         {
+            MoveFigure(toCell, fromCell);
+            bool isLeft = toCell.Position.GetColumn() < fromCell.Position.GetColumn();
             char[] listColumn = chessboard.GetListColumns();
-            Func<char, char[], char?> nextColumnFun = castingMove[0].HasValue 
+            Func<char, char[], char?> nextColumnFun = isLeft
                 ? king.GetLeftColumn
                 : king.GetRightColumn;
-            
+
+            Func<char, char[], char?> prevColumnFun = isLeft
+                ? king.GetRightColumn
+                : king.GetLeftColumn;
+
             var nextColumn = nextColumnFun(kingStartColumn, listColumn);
             var currentPos = Position.Make(nextColumn!.Value, king.Position.GetRow());
             var fromCellRook = chessboard.GetCellByPosition(currentPos);
-            
-            Func<char, char[], char?> prevColumnFun = castingMove[0].HasValue 
-                ? king.GetRightColumn
-                : king.GetLeftColumn;
-            
+
             while (!(fromCellRook.HasFigure() && fromCellRook.Figure!.GetTypeFigure() == FigureType.Rook))
             {
                 nextColumn = nextColumnFun(nextColumn.Value, listColumn);

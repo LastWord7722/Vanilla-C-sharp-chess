@@ -156,6 +156,11 @@ public class GameEngine : IGameEngine
         Cell toCell = ButtonCells[lastMove.To].GetCell();
         Cell fromCell = ButtonCells[lastMove.From].GetCell();
         _movedService.MoveFigure(fromCell, toCell);
+        
+        if (_stateService.HistoryMoves.CountMoveFigures(lastMove.Figure) <= 1)
+        {
+            fromCell.Figure!.IsFigureNotMoved = true;
+        }
         if (lastMove.CapturedFigure != null)
         {
             toCell.Figure = lastMove.CapturedFigure; 
@@ -164,14 +169,11 @@ public class GameEngine : IGameEngine
             HistoryCastingMoveItem casting = lastMove.CastingMoveItem!.Value;
             _movedService.MoveFigure(ButtonCells[casting.From].GetCell(), ButtonCells[casting.To].GetCell());
             ButtonCells[casting.From].GetCell().Figure!.IsFigureNotMoved = true;
-            fromCell.Figure!.IsFigureNotMoved = true;
         }
 
         _stateService.HistoryMoves.RemoveLast();
         _stateService.ToogleColor();
         _selectedBtnFigure = null;
         RerenderBoard();
-        Console.WriteLine(_stateService.HistoryMoves.ToString());
-        Console.WriteLine("----");
     }
 }

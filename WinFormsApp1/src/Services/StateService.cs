@@ -41,6 +41,10 @@ public class StateService : IStateService
 
     public void AddHistoryMove(Cell cellFrom, Cell cellTo)
     {
+        if (cellFrom.Figure == null)
+        {
+            throw new Exception($"Can't add history move, figure is null {cellFrom.Position.GetPositionCode()}");
+        }
         HistoryMoves.Add(cellFrom.Figure!, cellFrom.Position, cellTo.Position, cellTo.Figure);
     }
     public void AddCastlingHistoryMove(Cell kingCellFrom, Cell kingCellTo, Cell rookCellFrom, Cell rookCellTo)
