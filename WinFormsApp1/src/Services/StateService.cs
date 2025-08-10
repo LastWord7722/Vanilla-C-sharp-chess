@@ -2,14 +2,13 @@ using WinFormsApp1.Entities.Chessboard;
 using WinFormsApp1.Entities.Figures;
 using WinFormsApp1.Enums;
 using WinFormsApp1.Interfaces;
-using WinFormsApp1.ValueObjects;
 
 namespace WinFormsApp1.Services;
 
 public class StateService : IStateService
 {
     private FigureColor _figureColor = FigureColor.White;
-    public List<HistoryMoveItem> HistoryMoves { get; } = new();
+    public MoveList HistoryMoves { get; private set; } = new();
 
     public void ToogleColor()
     {
@@ -40,9 +39,8 @@ public class StateService : IStateService
         }
     }
 
-    public void SetHistoryMoves(Cell cellFrom, Cell cellTo)
+    public void AddHistoryMove(Cell cellFrom, Cell cellTo)
     {
-        HistoryMoves.Add(new HistoryMoveItem(cellFrom.Figure!, cellFrom.Position, cellTo.Position, cellTo.Figure));
+        HistoryMoves.Add(cellFrom.Figure!, cellFrom.Position, cellTo.Position, cellTo.Figure);
     }
-
 }
