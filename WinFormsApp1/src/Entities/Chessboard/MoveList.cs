@@ -16,4 +16,8 @@ public class MoveList
 
     public HistoryMoveItem Last()
         => _items.LastOrDefault();
+    
+    public int Count() => _items.Count;
+
+    public void RemoveLast() => _items.RemoveAt(_items.Count - 1);
 }

@@ -4,10 +4,10 @@ namespace WinFormsApp1.ValueObjects;
 
 public readonly record struct HistoryMoveItem
 {
-    private BaseFigure? CapturedFigure { get; }
+    public BaseFigure? CapturedFigure { get;}
     private BaseFigure Figure { get; }
-    private Position From { get; }
-    private Position To { get; }
+    public Position From { get; }
+    public Position To { get; }
 
     public HistoryMoveItem(BaseFigure figure, Position from, Position to, BaseFigure? capturedFigure = null)
     {

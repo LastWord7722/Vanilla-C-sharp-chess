@@ -82,21 +82,7 @@ public class GameEngine : IGameEngine
         FigureColor figureColor = _stateService.GetCurrentColor();
         //todo: можно проврять не всех а только ту пешку которая ходила, я думаю это норм оптимизация
         _stateService.CheckAndPromotePawns(Chessboard!.GetCellByFigure(FigureType.Pawn, figureColor), figureColor);
-        //todo: надо разобраться с эвентами и убрать отсюда форму вообще, обновлять состояние иконок только той фигуры которая ходила
-        foreach (var (_, cell) in ButtonCells)
-        {
-            if (cell.GetCell().HasFigure())
-            {
-                cell.SetCenter(IconFigureFactory.Create(cell.GetCell().Figure!));
-            }
-            else
-            {
-                cell.SetCenter("");
-            }
-
-            cell.ResetColorToDefault();
-        }
-
+        RerenderBoard();
         _currentPossibleMoves.Clear();
         _stateService.ToogleColor();
 
@@ -112,6 +98,23 @@ public class GameEngine : IGameEngine
         }
     }
 
+    private void RerenderBoard()
+    {
+        //todo: надо разобраться с эвентами и убрать отсюда форму вообще, обновлять состояние иконок только той фигуры которая ходила
+        foreach (var (_, cell) in ButtonCells)
+        {
+            if (cell.GetCell().HasFigure())
+            {
+                cell.SetCenter(IconFigureFactory.Create(cell.GetCell().Figure!));
+            }
+            else
+            {
+                cell.SetCenter("");
+            }
+
+            cell.ResetColorToDefault();
+        }
+    }
     public void HandleClick(ButtonCell btnCell)
     {
         if (Chessboard == null || ButtonCells.Count <= 0)
@@ -140,5 +143,29 @@ public class GameEngine : IGameEngine
         {
             HandleMoveFigure(btnCell);
         }
+    }
+
+    public void HandleBack()
+    {
+        //todo: всё ок, нужно только обработать кейс ракировки, сейчас это не учтено 
+        if (_stateService.HistoryMoves.Count() <= 0)
+        {
+            return;
+        }
+        HistoryMoveItem lastMove = _stateService.HistoryMoves.Last();
+        
+        Cell fromCell = ButtonCells[lastMove.From].GetCell();
+        Cell toCell = ButtonCells[lastMove.To].GetCell();
+        _movedService.MoveFigure(fromCell, toCell);
+        if (lastMove.CapturedFigure != null)
+        {
+            toCell.Figure = lastMove.CapturedFigure; 
+        }
+        _stateService.HistoryMoves.RemoveLast();
+        _stateService.ToogleColor();
+        _selectedBtnFigure = null;
+        RerenderBoard();
+        Console.WriteLine(_stateService.HistoryMoves.ToString());
+        Console.WriteLine("----");
     }
 }

@@ -44,6 +44,14 @@ partial class Form1
         
         Chessboard chessboard = initChessboard();
         Dictionary<Position, ButtonCell> buttonCells = rendreChessboard(chessboard);
+        
+        Button back = new Button();
+        back.Size = new Size(50, 50);
+        back.Location = new Point(750, 50);
+        back.Text = "Back";
+        back.Click += BtnBack_Click;
+        this.Controls.Add(back);
+
         _gameEngine = GameEngineFactory.Get(chessboard,buttonCells);
         
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -92,6 +100,11 @@ partial class Form1
         }
 
         return buttonCells;
+    }
+
+    void BtnBack_Click(Object sender, EventArgs e)
+    {
+        _gameEngine.HandleBack();
     }
     void BtnCell_Click(Object sender, EventArgs e)
     {
