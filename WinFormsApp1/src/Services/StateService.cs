@@ -43,4 +43,15 @@ public class StateService : IStateService
     {
         HistoryMoves.Add(cellFrom.Figure!, cellFrom.Position, cellTo.Position, cellTo.Figure);
     }
+    public void AddCastlingHistoryMove(Cell kingCellFrom, Cell kingCellTo, Cell rookCellFrom, Cell rookCellTo)
+    {
+        HistoryMoves.AddCastling(
+            kingCellTo.Figure as King, 
+            kingCellFrom.Position,
+            kingCellTo.Position,
+            rookCellFrom.Figure as Rook,
+            rookCellFrom.Position,
+            rookCellTo.Position
+        );
+    }
 }

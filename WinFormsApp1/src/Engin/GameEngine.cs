@@ -64,14 +64,14 @@ public class GameEngine : IGameEngine
 
         Cell fromMove = _selectedBtnFigure!.GetCell();
         Cell toMove = btnMoveTo.GetCell();
-        _stateService.AddHistoryMove(fromMove, toMove);
         
         if (_selectedBtnFigure!.GetCell().Figure!.GetTypeFigure() == FigureType.King)
         {
-            _movedService.MoveKingFigure(toMove, fromMove, Chessboard!);
+            _movedService.MoveKingFigure(toMove, fromMove, Chessboard!,_stateService);
         }
         else
         {
+            _stateService.AddHistoryMove(fromMove, toMove);
             _movedService.MoveFigure(toMove, fromMove);
         }
         
@@ -147,20 +147,26 @@ public class GameEngine : IGameEngine
 
     public void HandleBack()
     {
-        //todo: всё ок, нужно только обработать кейс ракировки, сейчас это не учтено 
         if (_stateService.HistoryMoves.Count() <= 0)
         {
             return;
         }
         HistoryMoveItem lastMove = _stateService.HistoryMoves.Last();
         
-        Cell fromCell = ButtonCells[lastMove.From].GetCell();
         Cell toCell = ButtonCells[lastMove.To].GetCell();
+        Cell fromCell = ButtonCells[lastMove.From].GetCell();
         _movedService.MoveFigure(fromCell, toCell);
         if (lastMove.CapturedFigure != null)
         {
             toCell.Figure = lastMove.CapturedFigure; 
+        }else if (lastMove.IsCastling())
+        {
+            HistoryCastingMoveItem casting = lastMove.CastingMoveItem!.Value;
+            _movedService.MoveFigure(ButtonCells[casting.From].GetCell(), ButtonCells[casting.To].GetCell());
+            ButtonCells[casting.From].GetCell().Figure!.IsFigureNotMoved = true;
+            fromCell.Figure!.IsFigureNotMoved = true;
         }
+
         _stateService.HistoryMoves.RemoveLast();
         _stateService.ToogleColor();
         _selectedBtnFigure = null;

@@ -4,6 +4,6 @@ namespace WinFormsApp1.Interfaces;
 
 public interface IMovedService
 {
-    public void MoveFigure(Cell toMovCell, Cell currentCell);
-    public void MoveKingFigure(Cell toMovCell, Cell currentCell, Chessboard chessboard);
+    public void MoveFigure(Cell toMovCell, Cell fromCell);
+    public void MoveKingFigure(Cell toMovCell, Cell fromCell, Chessboard chessboard, IStateService stateService);
 }

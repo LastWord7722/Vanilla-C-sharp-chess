@@ -8,32 +8,36 @@ namespace WinFormsApp1.Services;
 
 public class MovedService : IMovedService
 {
-    public void MoveFigure(Cell toMovCell, Cell currentCell)
+    public void MoveFigure(Cell toCell, Cell fromCell)
     {
-        if (!currentCell.HasFigure())
+        if (!fromCell.HasFigure())
         {
-            throw new Exception("currentCell not a figure");
+            throw new Exception("fromCell not a figure");
         }
         
-        currentCell.Figure!.Position = toMovCell.Position;
-        toMovCell.Figure = currentCell.Figure!;
-        toMovCell.Figure.SetFigureMove();
-        currentCell.Figure = null;
+        fromCell.Figure!.Position = toCell.Position;
+        toCell.Figure = fromCell.Figure!;
+        toCell.Figure.IsFigureNotMoved = false;
+        fromCell.Figure = null;
     }
 
-    public void MoveKingFigure(Cell toMovCell, Cell currentCell, Chessboard chessboard)
+    public void MoveKingFigure(Cell toCell, Cell fromCell, Chessboard chessboard,IStateService stateService)
     {
-        if (!currentCell.HasFigure() || currentCell.Figure.GetTypeFigure() != FigureType.King)
+        if (!fromCell.HasFigure() || fromCell.Figure.GetTypeFigure() != FigureType.King)
         {
             throw new Exception("Figure is null or figure type not king");
         }
         
-        King king = currentCell!.Figure as King;
-        
+        King king = fromCell!.Figure as King;
         Position?[] castingMove = king.GetCasstlingMove(chessboard);
         char kingStartColumn = king.Position.GetColumn();
-        MoveFigure(toMovCell, currentCell);
-        if (castingMove.Contains(toMovCell.Position))
+
+        MoveFigure(toCell, fromCell);
+        if (!castingMove.Contains(toCell.Position))
+        {
+            stateService.AddHistoryMove(fromCell, toCell);
+        }
+        else
         {
             char[] listColumn = chessboard.GetListColumns();
             Func<char, char[], char?> nextColumnFun = castingMove[0].HasValue 
@@ -42,28 +46,29 @@ public class MovedService : IMovedService
             
             var nextColumn = nextColumnFun(kingStartColumn, listColumn);
             var currentPos = Position.Make(nextColumn!.Value, king.Position.GetRow());
-            var rookCell = chessboard.GetCellByPosition(currentPos);
+            var fromCellRook = chessboard.GetCellByPosition(currentPos);
             
             Func<char, char[], char?> prevColumnFun = castingMove[0].HasValue 
                 ? king.GetRightColumn
                 : king.GetLeftColumn;
             
-            while (!(rookCell.HasFigure() && rookCell.Figure!.GetTypeFigure() == FigureType.Rook))
+            while (!(fromCellRook.HasFigure() && fromCellRook.Figure!.GetTypeFigure() == FigureType.Rook))
             {
                 nextColumn = nextColumnFun(nextColumn.Value, listColumn);
                 currentPos = Position.Make(nextColumn!.Value, king.Position.GetRow());
-                rookCell = chessboard.GetCellByPosition(currentPos);
+                fromCellRook = chessboard.GetCellByPosition(currentPos);
             }
 
-            if (!rookCell.HasFigure() || rookCell.Figure!.GetTypeFigure() != FigureType.Rook)
+            if (!fromCellRook.HasFigure() || fromCellRook.Figure!.GetTypeFigure() != FigureType.Rook)
             {
                 throw new Exception("Figure is null or figure type not rook");
             }
-            
-            MoveFigure(chessboard.GetCellByPosition(
-                Position.Make(prevColumnFun(king.Position.GetColumn(), listColumn)!.Value, king.Position.GetRow())),
-                rookCell
+
+            Cell toCellRook = chessboard.GetCellByPosition(
+                Position.Make(prevColumnFun(king.Position.GetColumn(), listColumn)!.Value, king.Position.GetRow())
             );
+            stateService.AddCastlingHistoryMove(fromCell, toCell, fromCellRook, toCellRook);
+            MoveFigure(toCellRook, fromCellRook);
         }
     }
 }

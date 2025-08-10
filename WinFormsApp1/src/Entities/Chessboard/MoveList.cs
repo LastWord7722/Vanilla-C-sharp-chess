@@ -11,12 +11,16 @@ public class MoveList
     public void Add(BaseFigure figure, Position from, Position to, BaseFigure? capturedFigure = null)
         => _items.Add(new HistoryMoveItem(figure!, from, to, capturedFigure));
 
+    public void AddCastling(King king, Position fromKing, Position toKing, Rook rook, Position fromRook,
+        Position toRook)
+        => _items.Add(new HistoryMoveItem(king, fromKing, toKing, new HistoryCastingMoveItem(rook, fromRook, toRook)));
+
     public override string ToString()
         => string.Join(';', _items.Select(m => m.GetCode()));
 
     public HistoryMoveItem Last()
         => _items.LastOrDefault();
-    
+
     public int Count() => _items.Count;
 
     public void RemoveLast() => _items.RemoveAt(_items.Count - 1);

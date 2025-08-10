@@ -14,11 +14,6 @@ public abstract class BaseFigure
         Color = color;
     }
 
-    public void SetFigureMove()
-    {
-        IsFigureNotMoved = false;
-    }
-
     public bool IsFigureNotMoved { get; set; } = true;
 
     //todo: методы получения позиции от текущей позиции стоит пересмотреть
@@ -44,7 +39,7 @@ public abstract class BaseFigure
         int leftColumnIndex = Color == FigureColor.White ? indexCurrentColumn + 1 : indexCurrentColumn - 1;
         return leftColumnIndex < 0 || leftColumnIndex >= columns.Length ? null : columns[leftColumnIndex];
     }
-    
+
     public char? GetLeftColumn(char currentColumn, char[] columns)
     {
         int indexCurrentColumn = Array.IndexOf(columns, currentColumn);
