@@ -157,6 +157,7 @@ public class GameEngine : IGameEngine
 
     public void HandleBack()
     {
+        //todo: не реализована возвращение превращение пешки обратно в пешку
         if (_stateService.HistoryMoves.Count() <= 0)
         {
             return;
