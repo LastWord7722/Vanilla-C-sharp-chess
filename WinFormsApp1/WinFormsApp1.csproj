@@ -14,4 +14,59 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="src\Storage\icons\figures\bb.png" />
+    <Content Include="src\Storage\icons\figures\bb.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\bk.png" />
+    <Content Include="src\Storage\icons\figures\bk.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\bn.png" />
+    <Content Include="src\Storage\icons\figures\bn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\bp.png" />
+    <Content Include="src\Storage\icons\figures\bp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\bq.png" />
+    <Content Include="src\Storage\icons\figures\bq.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\br.png" />
+    <Content Include="src\Storage\icons\figures\br.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\wb.png" />
+    <Content Include="src\Storage\icons\figures\wb.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\wk.png" />
+    <Content Include="src\Storage\icons\figures\wk.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\wn.png" />
+    <Content Include="src\Storage\icons\figures\wn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\wp.png" />
+    <Content Include="src\Storage\icons\figures\wp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\wq.png" />
+    <Content Include="src\Storage\icons\figures\wq.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\wr.png" />
+    <Content Include="src\Storage\icons\figures\wr.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="src\Storage\icons\figures\posible_move.png" />
+    <Content Include="src\Storage\icons\figures\possible_move.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

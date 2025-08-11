@@ -11,28 +11,27 @@ public class IconFigureFactory
             FigureColor.Black,
             new Dictionary<FigureType, string>()
             {
-                { FigureType.King, "\u265A" },
-                { FigureType.Queen, "\u265B" },
-                { FigureType.Rook, "\u265C" },
-                { FigureType.Bishop, "\u265D" },
-                { FigureType.Knight, "\u265E" },
-                { FigureType.Pawn, "\u265F" }
+                { FigureType.King, "bk.png" },
+                { FigureType.Queen, "bq.png" },
+                { FigureType.Rook, "br.png" },
+                { FigureType.Bishop, "bb.png" },
+                { FigureType.Knight, "bn.png" },
+                { FigureType.Pawn, "bp.png" }
             }
         },
         {
             FigureColor.White,
             new Dictionary<FigureType, string>()
             {
-                { FigureType.King, "\u2654" },
-                { FigureType.Queen, "\u2655" },
-                { FigureType.Rook, "\u2656" },
-                { FigureType.Bishop, "\u2657" },
-                { FigureType.Knight, "\u2658" },
-                { FigureType.Pawn, "\u2659" }
+                { FigureType.King, "wk.png" },
+                { FigureType.Queen, "wq.png" },
+                { FigureType.Rook, "wr.png" },
+                { FigureType.Bishop, "wb.png" },
+                { FigureType.Knight, "wn.png" },
+                { FigureType.Pawn, "wp.png" }
             }
         }
     };
-
 
     public static string Create(BaseFigure figure)
     {

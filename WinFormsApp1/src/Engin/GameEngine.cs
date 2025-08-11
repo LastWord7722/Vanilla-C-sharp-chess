@@ -2,7 +2,6 @@ using WinFormsApp1.Entities.Chessboard;
 using WinFormsApp1.Enums;
 using WinFormsApp1.Factories;
 using WinFormsApp1.FormLayout;
-using WinFormsApp1.Helpers;
 using WinFormsApp1.Interfaces;
 using WinFormsApp1.ValueObjects;
 
@@ -33,23 +32,35 @@ public class GameEngine : IGameEngine
 
     private void HandleClickFigure(ButtonCell btnCell)
     {
+        ResetPossibleMove();
+        _selectedBtnFigure = btnCell;
+        _currentPossibleMoves =
+            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, Chessboard);
+        //при большой количестве ходов видна задержка отрисовки, именно отрисовки сам просчёт быстрый
+        foreach (var move in _currentPossibleMoves)
+        {
+            if (ButtonCells[move].GetCell().HasFigure()) //возможность атткаовать, нужно добавить особую иконку
+            {
+                ButtonCells[move].SetPossibleMove("possible_move.png",40);
+            }
+            else
+            {
+                ButtonCells[move].SetPossibleMove("possible_move.png");
+            }
+        }
+        
+    }
+
+    private void ResetPossibleMove()
+    {
         if (_currentPossibleMoves.Count > 0)
         {
             foreach (var move in _currentPossibleMoves)
             {
-                ButtonCells[move].ResetColorToDefault();
+                ButtonCells[move].SetPossibleMove("");
             }
         }
-
-        _selectedBtnFigure = btnCell;
-        _currentPossibleMoves =
-            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, Chessboard);
-        foreach (var move in _currentPossibleMoves)
-        {
-            ButtonCells[move].SetBackGroundColor(ColorHelper.GetMoveColor());
-        }
     }
-
     private bool SelectedBtnIsNull()
     {
         return _selectedBtnFigure == null;
@@ -100,6 +111,7 @@ public class GameEngine : IGameEngine
 
     private void RerenderBoard()
     {
+        ResetPossibleMove();
         //todo: надо разобраться с эвентами и убрать отсюда форму вообще, обновлять состояние иконок только той фигуры которая ходила
         foreach (var (_, cell) in ButtonCells)
         {
@@ -111,8 +123,6 @@ public class GameEngine : IGameEngine
             {
                 cell.SetCenter("");
             }
-
-            cell.ResetColorToDefault();
         }
     }
     public void HandleClick(ButtonCell btnCell)

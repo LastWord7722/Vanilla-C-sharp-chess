@@ -1,103 +1,119 @@
+using System.Drawing.Drawing2D;
 using WinFormsApp1.Entities.Chessboard;
 
 namespace WinFormsApp1.FormLayout;
 
 public class ButtonCell : Button
 {
+    private int _maxSize;
+    private int _maxSizePossible;
     private readonly Cell _cell;
-    private Color _defaultColor;
-    private string _topLeftText = "";
-    private string _centerText = "";
-    private string _bottomRightText = "";
-    public ButtonCell(Cell cell, Color color)
+
+    private string? _figureImagePath = null;
+    private string? _possibleImagePath = null;
+
+    public ButtonCell(Cell cell)
     {
         _cell = cell;
-        _defaultColor = color;
-        SetBackGroundColor(_defaultColor);
-    }
-    
-    public static ButtonCell Make(Cell cell, bool isBlack, int x, int y)
-    {
-        Color defaultColor = isBlack 
-            ? Color.FromArgb(115, 149, 82) 
-            : Color.FromArgb(240, 241, 214);
-        
-        ButtonCell btn = new ButtonCell(cell,defaultColor);
-        btn.Size = new Size(50, 50);
-        btn.Location = new Point(x, y);
-        
-        btn.ForeColor = Color.Black;
-        
-        btn.FlatStyle = FlatStyle.Flat;
-        btn.FlatAppearance.BorderSize = 0;
-        btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(255, 255, 51);
-        btn.FlatAppearance.MouseDownBackColor = defaultColor;
-        
-        btn.TabStop = false;
-        btn.Margin = new Padding(0);
-        btn.Padding = new Padding(0);
-        
-        return btn;
     }
 
-    public void ResetColorToDefault()
-    {
-        SetBackGroundColor(_defaultColor);
-    }
-    public ButtonCell SetBackGroundColor(Color color)
-    {
-        BackColor = color;
-        return this;
-    }
     public ButtonCell SetClickEvent(EventHandler handler)
     {
         Click += handler;
         return this;
     }
-    public ButtonCell SetTopLeft(string text)
+
+    public ButtonCell SetCenter(string img, int size = 45)
     {
-        _topLeftText = text;
+        _maxSize = size;
+        _figureImagePath = img;
         Invalidate();
         return this;
     }
-    public ButtonCell SetBottomRight(string text)
+    public ButtonCell SetPossibleMove(string img, int size = 25)
     {
-        _bottomRightText = text;
+        _maxSizePossible = size;
+        _possibleImagePath = img;
         Invalidate();
         return this;
-    }
-    public ButtonCell SetCenter(string text)
-    {
-        _centerText = text;
-        Invalidate();
-        return this;
-    }
-    protected override void OnPaint(PaintEventArgs pevent)
-    {
-        base.OnPaint(pevent); //Рисует фон и границу кнопки
-
-        var g = pevent.Graphics;
-        using var brush = new SolidBrush(this.ForeColor);
-        var font = this.Font;
-        var fontCenter = new Font(Font.FontFamily, 20);
-
-        //Левый верхний угол
-        g.DrawString(_topLeftText, font, brush, new PointF(2, 2));
-
-        //Центр
-        var centerSize = g.MeasureString(_centerText, fontCenter);
-        var centerX = (this.Width - centerSize.Width) / 2;
-        var centerY = (this.Height - centerSize.Height) / 2;
-        g.DrawString(_centerText, fontCenter, brush, new PointF(centerX, centerY));
-
-        //Правый нижний угол
-        var bottomRightSize = g.MeasureString(_bottomRightText, font);
-        float rightX = this.Width - bottomRightSize.Width - 2;
-        float bottomY = this.Height - bottomRightSize.Height - 2;
-        g.DrawString(_bottomRightText, font, brush, new PointF(rightX, bottomY));
     }
     public Cell GetCell() => _cell;
-    
-    
-    
+
+    public static ButtonCell Make(Cell cell, bool isBlack, int x, int y)
+    {
+        ButtonCell btn = new ButtonCell(cell);
+        btn.BackColor = isBlack
+            ? Color.FromArgb(115, 84, 46)
+            : Color.FromArgb(240, 235, 210);
+        btn.Size = new Size(50, 50);
+
+        btn.Location = new Point(x, y);
+
+        btn.ForeColor = Color.FromArgb(30, 30, 30);
+
+        btn.FlatStyle = FlatStyle.Flat;
+        btn.FlatAppearance.BorderSize = 0;
+
+        btn.TabStop = false;
+        btn.Margin = new Padding(0);
+        btn.Padding = new Padding(0);
+
+        return btn;
+    }
+
+    protected override void OnPaint(PaintEventArgs pevent)
+    {
+        base.OnPaint(pevent);
+        var g = pevent.Graphics;
+        //дублируется код, вынести в метод / перебрать цыклом 2 варинта 
+        if (!string.IsNullOrEmpty(_possibleImagePath))
+        {
+            string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "src", "Storage", "icons", "figures",
+                _possibleImagePath);
+            using var image = Image.FromFile(fullPath);
+
+            int width, height;
+            if (image.Width > image.Height)
+            {
+                width = _maxSizePossible;
+                height = image.Height * _maxSizePossible / image.Width;
+            }
+            else
+            {
+                height = _maxSizePossible;
+                width = image.Width * _maxSizePossible / image.Height;
+            }
+
+            int x = (Width - width) / 2;
+            int y = (Height - height) / 2;
+
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.DrawImage(image, new Rectangle(x, y, width, height));
+        }
+        if (!string.IsNullOrEmpty(_figureImagePath))
+        {
+            string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "src", "Storage", "icons", "figures",
+                _figureImagePath);
+            using var image = Image.FromFile(fullPath);
+
+            int width, height;
+            if (image.Width > image.Height)
+            {
+                width = _maxSize;
+                height = image.Height * _maxSize / image.Width;
+            }
+            else
+            {
+                height = _maxSize;
+                width = image.Width * _maxSize / image.Height;
+            }
+
+            int x = (Width - width) / 2;
+            int y = (Height - height) / 2;
+
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.DrawImage(image, new Rectangle(x, y, width, height));
+        }
+
+    }
 }
