@@ -14,10 +14,12 @@ public class MoveList
     public void AddCastling(King king, Position fromKing, Position toKing, Rook rook, Position fromRook,
         Position toRook)
         => _items.Add(new HistoryMoveItem(king, fromKing, toKing, new HistoryCastingMoveItem(rook, fromRook, toRook)));
+
     public int CountMoveFigures(BaseFigure figure)
     {
         return _items.Count(v => v.Figure == figure);
     }
+
     public override string ToString()
         => string.Join(';', _items.Select(m => m.GetCode()));
 
@@ -27,4 +29,11 @@ public class MoveList
     public int Count() => _items.Count;
 
     public void RemoveLast() => _items.RemoveAt(_items.Count - 1);
+
+    public void SetIsPromoteByIndex(int index, bool isPromote = true)
+    {
+        var item = _items[index];
+        item.IsPromote = isPromote;
+        _items[index] = item;
+    }
 }

@@ -14,15 +14,5 @@ public readonly record struct HistoryCastingMoveItem
         From = from;
         To = to;
     }
-
-    // public string GetCode()
-    // {
-    //     string captureText = CapturedFigure == null
-    //         ? ""
-    //         : $" x{CapturedFigure.Color.ToString()[0]}:{CapturedFigure.GetTypeFigure()}";
-    //
-    //     return
-    //         $"{Figure.Color.ToString()[0]}:{Figure.GetTypeFigure()} " +
-    //         $"{From.GetPositionCode()}->{To.GetPositionCode()}{captureText}";
-    // }
+    
 }

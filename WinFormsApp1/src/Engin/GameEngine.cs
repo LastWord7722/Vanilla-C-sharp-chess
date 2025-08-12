@@ -1,4 +1,5 @@
 using WinFormsApp1.Entities.Chessboard;
+using WinFormsApp1.Entities.Figures;
 using WinFormsApp1.Enums;
 using WinFormsApp1.Factories;
 using WinFormsApp1.FormLayout;
@@ -41,14 +42,13 @@ public class GameEngine : IGameEngine
         {
             if (ButtonCells[move].GetCell().HasFigure()) //возможность атткаовать, нужно добавить особую иконку
             {
-                ButtonCells[move].SetPossibleMove("possible_move.png",40);
+                ButtonCells[move].SetPossibleMove("possible_move.png", 40);
             }
             else
             {
                 ButtonCells[move].SetPossibleMove("possible_move.png");
             }
         }
-        
     }
 
     private void ResetPossibleMove()
@@ -61,6 +61,7 @@ public class GameEngine : IGameEngine
             }
         }
     }
+
     private bool SelectedBtnIsNull()
     {
         return _selectedBtnFigure == null;
@@ -75,17 +76,17 @@ public class GameEngine : IGameEngine
 
         Cell fromMove = _selectedBtnFigure!.GetCell();
         Cell toMove = btnMoveTo.GetCell();
-        
+
         if (_selectedBtnFigure!.GetCell().Figure!.GetTypeFigure() == FigureType.King)
         {
-            _movedService.MoveKingFigure(toMove, fromMove, Chessboard!,_stateService);
+            _movedService.MoveKingFigure(toMove, fromMove, Chessboard!, _stateService);
         }
         else
         {
             _stateService.AddHistoryMove(fromMove, toMove);
             _movedService.MoveFigure(toMove, fromMove);
         }
-        
+
         Console.WriteLine(_stateService.HistoryMoves.ToString());
         Console.WriteLine("----");
         _selectedBtnFigure = null;
@@ -125,6 +126,7 @@ public class GameEngine : IGameEngine
             }
         }
     }
+
     public void HandleClick(ButtonCell btnCell)
     {
         if (Chessboard == null || ButtonCells.Count <= 0)
@@ -157,25 +159,32 @@ public class GameEngine : IGameEngine
 
     public void HandleBack()
     {
-        //todo: не реализована возвращение превращение пешки обратно в пешку
         if (_stateService.HistoryMoves.Count() <= 0)
         {
             return;
         }
+
         HistoryMoveItem lastMove = _stateService.HistoryMoves.Last();
-        
+
         Cell toCell = ButtonCells[lastMove.To].GetCell();
         Cell fromCell = ButtonCells[lastMove.From].GetCell();
         _movedService.MoveFigure(fromCell, toCell);
-        
+
+        if (lastMove.IsPromote)
+        {
+            fromCell.Figure = new Pawn(lastMove.Figure.Color, fromCell.Position);
+        }
+
         if (_stateService.HistoryMoves.CountMoveFigures(lastMove.Figure) <= 1)
         {
             fromCell.Figure!.IsFigureNotMoved = true;
         }
+
         if (lastMove.CapturedFigure != null)
         {
-            toCell.Figure = lastMove.CapturedFigure; 
-        }else if (lastMove.IsCastling())
+            toCell.Figure = lastMove.CapturedFigure;
+        }
+        else if (lastMove.IsCastling())
         {
             HistoryCastingMoveItem casting = lastMove.CastingMoveItem!.Value;
             _movedService.MoveFigure(ButtonCells[casting.From].GetCell(), ButtonCells[casting.To].GetCell());

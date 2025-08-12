@@ -8,7 +8,7 @@ namespace WinFormsApp1.Services;
 public class StateService : IStateService
 {
     private FigureColor _figureColor = FigureColor.White;
-    public MoveList HistoryMoves { get; private set; } = new();
+    public MoveList HistoryMoves { get; protected set; } = new();
 
     public void ToogleColor()
     {
@@ -35,6 +35,7 @@ public class StateService : IStateService
             {
                 // todo: не очень нравится что state service делает превращение хоть и маленькое 
                 cell.Figure = new Queen(color, cell.Position);
+                HistoryMoves.SetIsPromoteByIndex(HistoryMoves.Count() - 1);
             }
         }
     }
@@ -45,12 +46,14 @@ public class StateService : IStateService
         {
             throw new Exception($"Can't add history move, figure is null {cellFrom.Position.GetPositionCode()}");
         }
+
         HistoryMoves.Add(cellFrom.Figure!, cellFrom.Position, cellTo.Position, cellTo.Figure);
     }
+
     public void AddCastlingHistoryMove(Cell kingCellFrom, Cell kingCellTo, Cell rookCellFrom, Cell rookCellTo)
     {
         HistoryMoves.AddCastling(
-            kingCellTo.Figure as King, 
+            kingCellTo.Figure as King,
             kingCellFrom.Position,
             kingCellTo.Position,
             rookCellFrom.Figure as Rook,

@@ -2,13 +2,14 @@ using WinFormsApp1.Entities.Figures;
 
 namespace WinFormsApp1.ValueObjects;
 
-public readonly record struct HistoryMoveItem
+public record struct HistoryMoveItem
 {
     public BaseFigure Figure { get; }
     public Position From { get; }
     public Position To { get; }
     public HistoryCastingMoveItem? CastingMoveItem { get; } = null;
-    public BaseFigure? CapturedFigure { get;} = null;
+    public bool IsPromote { get; set; } = false;
+    public BaseFigure? CapturedFigure { get; } = null;
 
     public HistoryMoveItem(BaseFigure figure, Position from, Position to, BaseFigure? capturedFigure = null)
     {
@@ -17,6 +18,7 @@ public readonly record struct HistoryMoveItem
         From = from;
         To = to;
     }
+
     public HistoryMoveItem(BaseFigure figure, Position from, Position to, HistoryCastingMoveItem castingMoveItem)
     {
         CastingMoveItem = castingMoveItem;
@@ -24,15 +26,31 @@ public readonly record struct HistoryMoveItem
         From = from;
         To = to;
     }
-    public bool IsCastling() => CastingMoveItem != null;
+
+    public bool IsCastling() => CastingMoveItem.HasValue;
+
     public string GetCode()
     {
+        if (IsCastling())
+        {
+            bool isLongCastling = CastingMoveItem!.Value.From.GetColumn() > CastingMoveItem!.Value.To.GetColumn();
+            return isLongCastling ? "O-O-O" : "O-O";
+        }
+
         string captureText = CapturedFigure == null
             ? ""
             : $" x{CapturedFigure.Color.ToString()[0]}:{CapturedFigure.GetTypeFigure()}";
 
-        return
+        string baseMove =
             $"{Figure.Color.ToString()[0]}:{Figure.GetTypeFigure()} " +
             $"{From.GetPositionCode()}->{To.GetPositionCode()}{captureText}";
+        
+        if (IsPromote)
+        {
+            baseMove += "=Q";
+        }
+
+        return baseMove;
     }
+
 }
