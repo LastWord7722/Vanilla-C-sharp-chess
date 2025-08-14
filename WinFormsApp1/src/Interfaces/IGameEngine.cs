@@ -8,6 +8,6 @@ public interface IGameEngine
 {
     public Dictionary<Position, ButtonCell> ButtonCells { set; }
     public Chessboard? Chessboard { set; }
-    public void HandleClick(ButtonCell btnCell);
+    public void HandleClick(Cell cell);
     public void HandleBack();
 }

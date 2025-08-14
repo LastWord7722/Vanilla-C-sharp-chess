@@ -11,10 +11,10 @@ namespace WinFormsApp1.Engin;
 public class GameEngine : IGameEngine
 {
     //todo: нужно подумать как вынести ui из логики Dictionary<Position, ButtonCell> _buttonCells
-    private IMovedService _movedService;
-    private IValidationMovedService _validationMovedService;
-    private IStateService _stateService;
-    private ButtonCell? _selectedBtnFigure;
+    private readonly IMovedService _movedService;
+    private readonly IValidationMovedService _validationMovedService;
+    private readonly IStateService _stateService;
+    private Cell? _selectedCellFigure;
     private List<Position> _currentPossibleMoves = new();
     public Dictionary<Position, ButtonCell> ButtonCells { private get; set; } = new();
     public Chessboard? Chessboard { private get; set; }
@@ -31,12 +31,11 @@ public class GameEngine : IGameEngine
         _stateService = colorService;
     }
 
-    private void HandleClickFigure(ButtonCell btnCell)
+    private void HandleClickFigure(Cell cell)
     {
         ResetPossibleMove();
-        _selectedBtnFigure = btnCell;
-        _currentPossibleMoves =
-            _validationMovedService.GetRealAvailableMoves(_selectedBtnFigure.GetCell().Figure!, Chessboard);
+        _selectedCellFigure = cell;
+        _currentPossibleMoves = _validationMovedService.GetRealAvailableMoves(_selectedCellFigure.Figure!, Chessboard!);
         //при большой количестве ходов видна задержка отрисовки, именно отрисовки сам просчёт быстрый
         foreach (var move in _currentPossibleMoves)
         {
@@ -51,83 +50,38 @@ public class GameEngine : IGameEngine
         }
     }
 
-    private void ResetPossibleMove()
+    private void HandleMoveFigure(Cell toCell)
     {
-        if (_currentPossibleMoves.Count > 0)
-        {
-            foreach (var move in _currentPossibleMoves)
-            {
-                ButtonCells[move].SetPossibleMove("");
-            }
-        }
-    }
-
-    private bool SelectedBtnIsNull()
-    {
-        return _selectedBtnFigure == null;
-    }
-
-    private void HandleMoveFigure(ButtonCell btnMoveTo)
-    {
-        if (SelectedBtnIsNull() || !_currentPossibleMoves.Contains(btnMoveTo.GetCell().Position))
+        if (SelectedCellIsNull() || !_currentPossibleMoves.Contains(toCell.Position))
         {
             return;
         }
 
-        Cell fromMove = _selectedBtnFigure!.GetCell();
-        Cell toMove = btnMoveTo.GetCell();
-
-        if (_selectedBtnFigure!.GetCell().Figure!.GetTypeFigure() == FigureType.King)
+        if (_selectedCellFigure!.Figure!.GetTypeFigure() == FigureType.King)
         {
-            _movedService.MoveKingFigure(toMove, fromMove, Chessboard!, _stateService);
+            _movedService.MoveKingFigure(toCell, _selectedCellFigure, Chessboard!, _stateService);
         }
         else
         {
-            _stateService.AddHistoryMove(fromMove, toMove);
-            _movedService.MoveFigure(toMove, fromMove);
+            _stateService.AddHistoryMove(_selectedCellFigure, toCell);
+            _movedService.MoveFigure(toCell, _selectedCellFigure);
         }
+        
+        _selectedCellFigure = null;
+        _stateService.CheckAndPromotePawn(toCell);
 
-        Console.WriteLine(_stateService.HistoryMoves.ToString());
-        Console.WriteLine("----");
-        _selectedBtnFigure = null;
-
-        FigureColor figureColor = _stateService.GetCurrentColor();
-        //todo: можно проврять не всех а только ту пешку которая ходила, я думаю это норм оптимизация
-        _stateService.CheckAndPromotePawns(Chessboard!.GetCellByFigure(FigureType.Pawn, figureColor), figureColor);
         RerenderBoard();
         _currentPossibleMoves.Clear();
         _stateService.ToogleColor();
 
-        if (!_validationMovedService.DetectNotCheckMate(Chessboard, _stateService.GetCurrentColor()))
+        if (!_validationMovedService.DetectNotCheckMate(Chessboard!, _stateService.GetCurrentColor()))
         {
-            MessageBox.Show(
-                $"{_stateService.GetOtherColor()} победили! Шах и мат.",
-                "Игра окончена",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
+            ShowWinModal();
             return;
         }
     }
 
-    private void RerenderBoard()
-    {
-        ResetPossibleMove();
-        //todo: надо разобраться с эвентами и убрать отсюда форму вообще, обновлять состояние иконок только той фигуры которая ходила
-        foreach (var (_, cell) in ButtonCells)
-        {
-            if (cell.GetCell().HasFigure())
-            {
-                cell.SetCenter(IconFigureFactory.Create(cell.GetCell().Figure!));
-            }
-            else
-            {
-                cell.SetCenter("");
-            }
-        }
-    }
-
-    public void HandleClick(ButtonCell btnCell)
+    public void HandleClick(Cell cell)
     {
         if (Chessboard == null || ButtonCells.Count <= 0)
         {
@@ -136,24 +90,18 @@ public class GameEngine : IGameEngine
 
         if (!_validationMovedService.DetectNotCheckMate(Chessboard, _stateService.GetCurrentColor()))
         {
-            MessageBox.Show(
-                $"{_stateService.GetOtherColor()} победили! Шах и мат.",
-                "Игра окончена",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
+            ShowWinModal();
             return;
         }
 
-        if (btnCell.GetCell().HasFigure() &&
-            btnCell.GetCell().Figure!.Color == _stateService.GetCurrentColor())
+        if (cell.HasFigure() && cell.Figure!.Color == _stateService.GetCurrentColor())
         {
-            HandleClickFigure(btnCell);
+            HandleClickFigure(cell);
         }
 
-        if (!SelectedBtnIsNull())
+        if (!SelectedCellIsNull())
         {
-            HandleMoveFigure(btnCell);
+            HandleMoveFigure(cell);
         }
     }
 
@@ -193,7 +141,50 @@ public class GameEngine : IGameEngine
 
         _stateService.HistoryMoves.RemoveLast();
         _stateService.ToogleColor();
-        _selectedBtnFigure = null;
+        _selectedCellFigure = null;
         RerenderBoard();
+    }
+
+    //todo: надо разобраться с эвентами и убрать отсюда форму вообще, обновлять состояние иконок только той фигуры которая ходила
+    private void RerenderBoard()
+    {
+        ResetPossibleMove();
+        foreach (var (_, cell) in ButtonCells)
+        {
+            if (cell.GetCell().HasFigure())
+            {
+                cell.SetCenter(IconFigureFactory.Create(cell.GetCell().Figure!));
+            }
+            else
+            {
+                cell.SetCenter("");
+            }
+        }
+    }
+
+    private void ResetPossibleMove()
+    {
+        if (_currentPossibleMoves.Count > 0)
+        {
+            foreach (var move in _currentPossibleMoves)
+            {
+                ButtonCells[move].SetPossibleMove("");
+            }
+        }
+    }
+
+    private bool SelectedCellIsNull()
+    {
+        return _selectedCellFigure == null;
+    }
+
+    private void ShowWinModal()
+    {
+        MessageBox.Show(
+            $"{_stateService.GetOtherColor()} победили! Шах и мат.",
+            "Игра окончена",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information
+        );
     }
 }

@@ -25,18 +25,20 @@ public class StateService : IStateService
         return _figureColor == FigureColor.White ? FigureColor.Black : FigureColor.White;
     }
 
-    public void CheckAndPromotePawns(List<Cell> cells, FigureColor color)
+    public void CheckAndPromotePawn(Cell cell)
     {
-        int needPosition = color == FigureColor.Black ? 1 : 8;
-        foreach (var cell in cells)
+        if (cell.HasFigure() && cell.Figure!.GetTypeFigure() != FigureType.Pawn)
         {
-            if (cell.HasFigure() && cell.Figure!.GetTypeFigure() == FigureType.Pawn &&
-                cell.Position.GetRow() == needPosition)
-            {
-                // todo: не очень нравится что state service делает превращение хоть и маленькое 
-                cell.Figure = new Queen(color, cell.Position);
-                HistoryMoves.SetIsPromoteByIndex(HistoryMoves.Count() - 1);
-            }
+            return;
+        }
+
+        Pawn? pawn = cell!.Figure! as Pawn;
+        int needPosition = pawn!.Color == FigureColor.Black ? 1 : 8;
+        
+        if (cell.Position.GetRow() == needPosition)
+        {
+            cell.Figure = new Queen(pawn!.Color, cell.Position);
+            HistoryMoves.SetIsPromoteByIndex(HistoryMoves.Count() - 1);
         }
     }
 

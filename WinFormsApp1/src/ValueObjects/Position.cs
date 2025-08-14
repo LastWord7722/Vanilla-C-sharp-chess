@@ -23,9 +23,9 @@ public readonly record struct Position
     {
         column = char.ToUpper(column);
         if (column < 'A' || column > 'H')
-            throw new Exception("not valid position column");
+            throw new Exception($"not valid position column : {column}");
         if (row < 1 || row > 8)
-            throw new Exception("not valid position row");
+            throw new Exception($"not valid position row : {row}");
     }
 
     public string GetPositionCode()

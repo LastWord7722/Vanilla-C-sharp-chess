@@ -41,7 +41,7 @@ partial class Form1
         ButtonCell btnCell = sender as ButtonCell;
         if (btnCell == null) return;
         
-        _gameEngine.HandleClick(btnCell);
+        _gameEngine.HandleClick(btnCell.GetCell());
     }
 
 
