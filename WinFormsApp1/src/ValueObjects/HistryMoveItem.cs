@@ -1,3 +1,4 @@
+using WinFormsApp1.Engin;
 using WinFormsApp1.Entities.Figures;
 
 namespace WinFormsApp1.ValueObjects;
@@ -44,7 +45,7 @@ public record struct HistoryMoveItem
         string baseMove =
             $"{Figure.Color.ToString()[0]}:{Figure.GetTypeFigure()} " +
             $"{From.GetPositionCode()}->{To.GetPositionCode()}{captureText}";
-        
+
         if (IsPromote)
         {
             baseMove += "=Q";
@@ -53,4 +54,32 @@ public record struct HistoryMoveItem
         return baseMove;
     }
 
+    public UpdateGame CreateUpdateGame()
+    {
+        var update = new UpdateGame();
+        // Castling
+        if (IsCastling())
+        {
+            var castling = CastingMoveItem!.Value;
+            update.AddUpdated(To, From, Figure);
+            update.AddUpdated(castling.To, castling.From, castling.Figure);
+            
+            return update;
+        }
+        // Promote
+        if (IsPromote)
+        {
+            update.AddUpdated(To, From, Figure);
+            return update;
+        }
+        // взятие
+        // if (CapturedFigure != null)
+        // {
+        //     update.AddUpdated(To, From, Figure);
+        //     return update;
+        // }
+        update.AddUpdated(To, From,Figure);
+
+        return update;
+    }
 }

@@ -11,6 +11,7 @@ namespace WinFormsApp1.Engin;
 public class GameEngine : IGameEngine
 {
     //todo: нужно подумать как вынести ui из логики Dictionary<Position, ButtonCell> _buttonCells
+    
     private readonly IMovedService _movedService;
     private readonly IValidationMovedService _validationMovedService;
     private readonly IStateService _stateService;
@@ -18,6 +19,7 @@ public class GameEngine : IGameEngine
     private List<Position> _currentPossibleMoves = new();
     public Dictionary<Position, ButtonCell> ButtonCells { private get; set; } = new();
     public Chessboard? Chessboard { private get; set; }
+    private readonly UpdateGame _updateGame = new();
 
 
     public GameEngine(
@@ -33,21 +35,9 @@ public class GameEngine : IGameEngine
 
     private void HandleClickFigure(Cell cell)
     {
-        ResetPossibleMove();
         _selectedCellFigure = cell;
         _currentPossibleMoves = _validationMovedService.GetRealAvailableMoves(_selectedCellFigure.Figure!, Chessboard!);
-        //при большой количестве ходов видна задержка отрисовки, именно отрисовки сам просчёт быстрый
-        foreach (var move in _currentPossibleMoves)
-        {
-            if (ButtonCells[move].GetCell().HasFigure()) //возможность атткаовать, нужно добавить особую иконку
-            {
-                ButtonCells[move].SetPossibleMove("possible_move.png", 40);
-            }
-            else
-            {
-                ButtonCells[move].SetPossibleMove("possible_move.png");
-            }
-        }
+        _updateGame.AddRangeMoved(_currentPossibleMoves);
     }
 
     private void HandleMoveFigure(Cell toCell)
@@ -56,7 +46,7 @@ public class GameEngine : IGameEngine
         {
             return;
         }
-
+        
         if (_selectedCellFigure!.Figure!.GetTypeFigure() == FigureType.King)
         {
             _movedService.MoveKingFigure(toCell, _selectedCellFigure, Chessboard!, _stateService);
@@ -70,7 +60,8 @@ public class GameEngine : IGameEngine
         _selectedCellFigure = null;
         _stateService.CheckAndPromotePawn(toCell);
 
-        RerenderBoard();
+        _updateGame.AddRangeAll(_stateService.HistoryMoves.Last().CreateUpdateGame());
+
         _currentPossibleMoves.Clear();
         _stateService.ToogleColor();
 
@@ -81,28 +72,37 @@ public class GameEngine : IGameEngine
         }
     }
 
-    public void HandleClick(Cell cell)
+    public UpdateGame HandleClick(Cell cell)
     {
-        if (Chessboard == null || ButtonCells.Count <= 0)
+        if (Chessboard == null)
         {
-            throw new NullReferenceException("Chessboard is null or empty ButtonCells");
+            throw new NullReferenceException("Chessboard is null");
         }
-
+        
         if (!_validationMovedService.DetectNotCheckMate(Chessboard, _stateService.GetCurrentColor()))
         {
             ShowWinModal();
-            return;
+            return _updateGame;
         }
-
+        
+        _updateGame.Clear();
+        _updateGame.AddRangeCleared(_currentPossibleMoves);
+        
         if (cell.HasFigure() && cell.Figure!.Color == _stateService.GetCurrentColor())
         {
+
             HandleClickFigure(cell);
         }
-
-        if (!SelectedCellIsNull())
+        else if (!SelectedCellIsNull() )
         {
             HandleMoveFigure(cell);
         }
+        if (cell.HasFigure() && cell.Figure!.Color != _stateService.GetCurrentColor())
+        {
+            _selectedCellFigure = null;
+        }
+        
+        return _updateGame;
     }
 
     public void HandleBack()
@@ -142,35 +142,7 @@ public class GameEngine : IGameEngine
         _stateService.HistoryMoves.RemoveLast();
         _stateService.ToogleColor();
         _selectedCellFigure = null;
-        RerenderBoard();
-    }
 
-    //todo: надо разобраться с эвентами и убрать отсюда форму вообще, обновлять состояние иконок только той фигуры которая ходила
-    private void RerenderBoard()
-    {
-        ResetPossibleMove();
-        foreach (var (_, cell) in ButtonCells)
-        {
-            if (cell.GetCell().HasFigure())
-            {
-                cell.SetCenter(IconFigureFactory.Create(cell.GetCell().Figure!));
-            }
-            else
-            {
-                cell.SetCenter("");
-            }
-        }
-    }
-
-    private void ResetPossibleMove()
-    {
-        if (_currentPossibleMoves.Count > 0)
-        {
-            foreach (var move in _currentPossibleMoves)
-            {
-                ButtonCells[move].SetPossibleMove("");
-            }
-        }
     }
 
     private bool SelectedCellIsNull()

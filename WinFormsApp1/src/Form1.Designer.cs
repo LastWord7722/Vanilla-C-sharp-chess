@@ -5,7 +5,6 @@ using WinFormsApp1.Entities.Figures;
 using WinFormsApp1.Enums;
 using WinFormsApp1.Factories;
 using WinFormsApp1.FormLayout;
-using WinFormsApp1.Helpers;
 using WinFormsApp1.Interfaces;
 using WinFormsApp1.ValueObjects;
 
@@ -15,6 +14,7 @@ partial class Form1
 {
     IGameEngine? _gameEngine = null;
     private System.ComponentModel.IContainer components = null;
+    public Dictionary<Position, ButtonCell> ButtonCells { private get; set; } = new();
     protected override void Dispose(bool disposing)
     {
         if (disposing && (components != null))
@@ -38,10 +38,38 @@ partial class Form1
     }
     void BtnCell_Click(Object sender, EventArgs e)
     {
-        ButtonCell btnCell = sender as ButtonCell;
+        ButtonCell btnCell = sender as ButtonCell; 
         if (btnCell == null) return;
         
-        _gameEngine.HandleClick(btnCell.GetCell());
+        UpdateGame updateGame = _gameEngine.HandleClick(btnCell.GetCell());
+        //update
+        foreach (UpdateGameItem item in updateGame.UpdatedList)
+        {
+            ButtonCells[item.To]
+                .SetCenter(IconFigureFactory.Create(item.Figure!));
+            
+            ButtonCells[item.From]
+                .SetCenter("");
+        }
+        //clear
+        foreach (var move in updateGame.ClearList)
+        {
+            ButtonCells[move].SetPossibleMove("");
+        }
+        //move
+        foreach (var move in updateGame.MoveList)
+        {
+            //при большой количестве ходов видна задержка отрисовки, именно отрисовки сам просчёт быстрый
+            if (ButtonCells[move].GetCell().HasFigure()) //возможность атткаовать, нужно добавить особую иконку
+            {
+                ButtonCells[move].SetPossibleMove("possible_move.png", 40);
+            }
+            else
+            {
+                ButtonCells[move].SetPossibleMove("possible_move.png");
+            }
+        }
+      
     }
 
 
@@ -68,7 +96,7 @@ partial class Form1
         
         Chessboard chessboard = new ArrangerFigure(Chessboard.Make()).ClassicArrangement();
         Dictionary<Position, ButtonCell> buttonCells = rendreChessboard(chessboard, innerBoard, 50);
-        
+        ButtonCells =  buttonCells;
         Panel controlPanel = new Panel();
         controlPanel.Size = new Size(150, 260);
         controlPanel.Location = new Point(740, 100);
