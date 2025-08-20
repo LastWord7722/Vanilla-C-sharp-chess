@@ -35,7 +35,16 @@ public class IconFigureFactory
 
     public static string Create(BaseFigure figure)
     {
-        //todo: add handler exception? 
-        return MAP[figure.Color][figure.GetTypeFigure()];
+        if (!MAP.TryGetValue(figure.Color, out var color))
+        {
+            throw new Exception("Figure color not found");
+        }
+
+        if (!color.TryGetValue(figure.GetTypeFigure(), out var type))
+        {
+            throw new Exception("Figure type not found");
+        }
+
+        return type;
     }
 }
