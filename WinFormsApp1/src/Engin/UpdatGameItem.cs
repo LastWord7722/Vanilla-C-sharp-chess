@@ -5,11 +5,11 @@ namespace WinFormsApp1.Engin;
 
 public readonly record struct UpdateGameItem
 {
-    public Position To { get; }
-    public Position From { get; }
+    public Position? To { get; }
+    public Position? From { get; }
     public BaseFigure Figure { get; }
 
-    public UpdateGameItem(Position to, Position from, BaseFigure figure)
+    public UpdateGameItem(Position? to, BaseFigure figure, Position? from = null)
     {
         From = from;
         To = to;

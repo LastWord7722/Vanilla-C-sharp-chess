@@ -10,14 +10,11 @@ namespace WinFormsApp1.Engin;
 
 public class GameEngine : IGameEngine
 {
-    //todo: нужно подумать как вынести ui из логики Dictionary<Position, ButtonCell> _buttonCells
-    
     private readonly IMovedService _movedService;
     private readonly IValidationMovedService _validationMovedService;
     private readonly IStateService _stateService;
     private Cell? _selectedCellFigure;
     private List<Position> _currentPossibleMoves = new();
-    public Dictionary<Position, ButtonCell> ButtonCells { private get; set; } = new();
     public Chessboard? Chessboard { private get; set; }
     private readonly UpdateGame _updateGame = new();
 
@@ -105,17 +102,17 @@ public class GameEngine : IGameEngine
         return _updateGame;
     }
 
-    public void HandleBack()
+    public UpdateGame HandleBack()
     {
         if (_stateService.HistoryMoves.Count() <= 0)
         {
-            return;
+            return new UpdateGame();
         }
 
         HistoryMoveItem lastMove = _stateService.HistoryMoves.Last();
-
-        Cell toCell = ButtonCells[lastMove.To].GetCell();
-        Cell fromCell = ButtonCells[lastMove.From].GetCell();
+        Chessboard chessboard = Chessboard!; 
+        Cell toCell = chessboard.GetCellByPosition(lastMove.To);
+        Cell fromCell = chessboard.GetCellByPosition(lastMove.From);
         _movedService.MoveFigure(fromCell, toCell);
 
         if (lastMove.IsPromote)
@@ -135,14 +132,15 @@ public class GameEngine : IGameEngine
         else if (lastMove.IsCastling())
         {
             HistoryCastingMoveItem casting = lastMove.CastingMoveItem!.Value;
-            _movedService.MoveFigure(ButtonCells[casting.From].GetCell(), ButtonCells[casting.To].GetCell());
-            ButtonCells[casting.From].GetCell().Figure!.IsFigureNotMoved = true;
+            _movedService.MoveFigure(chessboard.GetCellByPosition(casting.From), chessboard.GetCellByPosition(casting.To));
+            chessboard.GetCellByPosition(casting.From).Figure!.IsFigureNotMoved = true;
         }
-
+        
+        UpdateGame updated = _stateService.HistoryMoves.Last().CreateUpdateGame(true);
         _stateService.HistoryMoves.RemoveLast();
         _stateService.ToogleColor();
         _selectedCellFigure = null;
-
+        return updated;
     }
 
     private bool SelectedCellIsNull()

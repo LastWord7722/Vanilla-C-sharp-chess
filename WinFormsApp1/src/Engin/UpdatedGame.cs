@@ -9,8 +9,8 @@ public class UpdateGame
     public List<Position> ClearList { get; } = new();
     public List<Position> MoveList { get; } = new();
 
-    public void AddUpdated(Position to, Position form, BaseFigure figure)
-        => UpdatedList.Add(new UpdateGameItem(to, form, figure));
+    public void AddUpdated(Position? to, BaseFigure figure, Position? form = null)
+        => UpdatedList.Add(new UpdateGameItem(to, figure, form));
 
     public void AddRangeUpdated(List<UpdateGameItem> updatedList)
         => UpdatedList.AddRange(updatedList);

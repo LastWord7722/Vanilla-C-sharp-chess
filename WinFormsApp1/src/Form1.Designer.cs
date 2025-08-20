@@ -31,25 +31,22 @@ partial class Form1
     ///  Required method for Designer support - do not modify
     ///  the contents of this method with the code editor.
     /// </summary>
-    
-    void BtnBack_Click(Object sender, EventArgs e)
+    void rerenderButtonCells(UpdateGame updateGame)
     {
-        _gameEngine.HandleBack();
-    }
-    void BtnCell_Click(Object sender, EventArgs e)
-    {
-        ButtonCell btnCell = sender as ButtonCell; 
-        if (btnCell == null) return;
-        
-        UpdateGame updateGame = _gameEngine.HandleClick(btnCell.GetCell());
         //update
         foreach (UpdateGameItem item in updateGame.UpdatedList)
         {
-            ButtonCells[item.To]
-                .SetCenter(IconFigureFactory.Create(item.Figure!));
+            if (item.To.HasValue)
+            {
+                ButtonCells[item.To.Value]
+                    .SetCenter(IconFigureFactory.Create(item.Figure!));
+            }
             
-            ButtonCells[item.From]
-                .SetCenter("");
+            if (item.From.HasValue)
+            {
+                ButtonCells[item.From.Value]
+                    .SetCenter("");
+            }
         }
         //clear
         foreach (var move in updateGame.ClearList)
@@ -69,13 +66,25 @@ partial class Form1
                 ButtonCells[move].SetPossibleMove("possible_move.png");
             }
         }
-      
     }
-
+    void BtnBack_Click(Object sender, EventArgs e)
+    {
+        UpdateGame updateGame = _gameEngine.HandleBack();
+        rerenderButtonCells(updateGame);
+    }
+    void BtnCell_Click(Object sender, EventArgs e)
+    {
+        ButtonCell btnCell = sender as ButtonCell; 
+        if (btnCell == null) return;
+        
+        UpdateGame updateGame = _gameEngine.HandleClick(btnCell.GetCell());
+        rerenderButtonCells(updateGame);
+    }
 
     private void InitializeComponent()
     {
-        this.components = new System.ComponentModel.Container();
+        // === create style and form ===
+        components = new System.ComponentModel.Container();
         this.Text = "Chess";
         this.ClientSize = new Size(940, 520);
         this.StartPosition = FormStartPosition.CenterScreen;
@@ -94,9 +103,6 @@ partial class Form1
         Panel innerBoard = CreateBoardContainer(new Point(60, 60));
         this.Controls.Add(innerBoard);
         
-        Chessboard chessboard = new ArrangerFigure(Chessboard.Make()).ClassicArrangement();
-        Dictionary<Position, ButtonCell> buttonCells = rendreChessboard(chessboard, innerBoard, 50);
-        ButtonCells =  buttonCells;
         Panel controlPanel = new Panel();
         controlPanel.Size = new Size(150, 260);
         controlPanel.Location = new Point(740, 100);
@@ -116,8 +122,7 @@ partial class Form1
 
         Button exit = CreateStyledButton("✖ Exit", 135, (s, e) => Application.Exit());
         controlPanel.Controls.Add(exit);
-
-
+        
         Label hint = new Label();
         hint.Text = "• Click a piece to move";
         hint.Font = new Font("Segoe UI", 8, FontStyle.Regular);
@@ -125,8 +130,10 @@ partial class Form1
         hint.AutoSize = true;
         hint.Location = new Point(740, 370);
         this.Controls.Add(hint);
-
-        _gameEngine = GameEngineFactory.Get(chessboard, buttonCells);
+        // === create logic ===
+        Chessboard chessboard = new ArrangerFigure(Chessboard.Make()).ClassicArrangement();
+        ButtonCells = rendreChessboard(chessboard, innerBoard, 50);
+        _gameEngine = GameEngineFactory.Get(chessboard);
     }
     private Panel CreateBoardContainer(Point topLeft)
     {

@@ -54,31 +54,36 @@ public record struct HistoryMoveItem
         return baseMove;
     }
 
-    public UpdateGame CreateUpdateGame()
+    public UpdateGame CreateUpdateGame(bool isBack = false)
     {
         var update = new UpdateGame();
-        // Castling
+
+        Position to = !isBack ? To : From;
+        Position from = !isBack ? From : To;
+        
         if (IsCastling())
         {
             var castling = CastingMoveItem!.Value;
-            update.AddUpdated(To, From, Figure);
-            update.AddUpdated(castling.To, castling.From, castling.Figure);
-            
+            Position toCastling = !isBack ? castling.To : castling.From;
+            Position fromCastling = !isBack ? castling.From : castling.To;
+
+            update.AddUpdated(to, Figure, from);
+            update.AddUpdated(toCastling, castling.Figure, fromCastling);
+
             return update;
         }
-        // Promote
+        
+        update.AddUpdated(to, Figure, from);
+
+        if (CapturedFigure != null && isBack)
+        {
+            update.AddUpdated(from, CapturedFigure);
+        }
+
         if (IsPromote)
         {
-            update.AddUpdated(To, From, Figure);
-            return update;
+            update.AddUpdated(to, isBack ? Figure : new Queen(Figure!.Color, Figure.Position));
         }
-        // взятие
-        // if (CapturedFigure != null)
-        // {
-        //     update.AddUpdated(To, From, Figure);
-        //     return update;
-        // }
-        update.AddUpdated(To, From,Figure);
 
         return update;
     }
