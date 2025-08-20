@@ -40,7 +40,10 @@ public class MovedService : IMovedService
         else
         {
             MoveFigure(toCell, fromCell);
-            bool isLeft = toCell.Position.GetColumn() < fromCell.Position.GetColumn();
+            bool isLeft = king.Color == FigureColor.White
+                ? toCell.Position.GetColumn() < fromCell.Position.GetColumn()
+                : toCell.Position.GetColumn() > fromCell.Position.GetColumn();
+            
             char[] listColumn = chessboard.GetListColumns();
             Func<char, char[], char?> nextColumnFun = isLeft
                 ? king.GetLeftColumn

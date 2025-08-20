@@ -125,8 +125,8 @@ public class King : BaseFigure
     {
         Position?[] result = [null, null];
 
-        var left = GetNextColumns(chessboard, true, 3);
-        var right = GetNextColumns(chessboard, false, 2);
+        var left = GetNextColumns(chessboard, true, Color == FigureColor.White ? 3 : 2);
+        var right = GetNextColumns(chessboard, false, Color == FigureColor.White ? 2 : 3);
 
         if (left.All(pos => !chessboard.HasFigureByPosition(pos)))
         {

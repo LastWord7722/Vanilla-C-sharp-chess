@@ -141,12 +141,12 @@ public class ValidationMovedService : IValidationMovedService
             .Select(value => value.HasValue)
             .ToArray();
         
-        if (!rooksFigure[0].IsFigureNotMoved)
+        if (rooksFigure.Count > 0 && !rooksFigure[0].IsFigureNotMoved)
         {
             result[0] = false;
         }
         
-        if (!rooksFigure[1].IsFigureNotMoved)
+        if (rooksFigure.Count > 1 && !rooksFigure[1].IsFigureNotMoved)
         {
             result[1] = false;
         }
@@ -157,8 +157,8 @@ public class ValidationMovedService : IValidationMovedService
 
         List<Position>[] positions =
         [
-            kingFigure.GetNextColumns(chessboard, true, 3),
-            kingFigure.GetNextColumns(chessboard, false, 2)
+            kingFigure.GetNextColumns(chessboard, true, kingFigure.Color == FigureColor.White ? 3 : 2),
+            kingFigure.GetNextColumns(chessboard, false, kingFigure.Color == FigureColor.White ? 2 : 3)
         ];
    
         foreach (BaseFigure figure in enymyFigure)
